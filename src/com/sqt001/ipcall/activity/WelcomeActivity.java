@@ -12,21 +12,18 @@ import android.view.Window;
 
 import com.sqt001.ipcall.R;
 import com.sqt001.ipcall.application.AppPreference;
-import com.sqt001.ipcall.application.BuildConfig;
 import com.sqt001.ipcall.contact.Account;
-import com.sqt001.ipcall.login.SendSms;
-import com.sqt001.ipcall.provider.GetSmsTask;
+import com.sqt001.ipcall.login.CheckAccount;
+import com.sqt001.ipcall.login.RegisterHandler;
+import com.sqt001.ipcall.login.SendSmsHandler;
 import com.sqt001.ipcall.provider.QueryAccountTask;
 import com.sqt001.ipcall.provider.QueryAccountTask.QueryAccountTaskListener;
-import com.sqt001.ipcall.provider.RegisterTask;
 import com.sqt001.ipcall.util.LogUtil;
 
 /**
  * 欢迎界面
  */
 public class WelcomeActivity extends Activity {
-  private SendSms sendSms = new SendSms(this);
-
   private final static int WELCOME_VIEW = 0;
   private final static int LOGON_RUN = 1;
   public final static int EXIT = 2;
@@ -73,7 +70,7 @@ public class WelcomeActivity extends Activity {
   }
 
   private void checkAccount() {
-    boolean isAccount = isAccountExist();
+    boolean isAccount = CheckAccount.getInstance().isAccountExist();
     LogUtil.w("isAccount: " + isAccount);
     if (isAccount) {
       startupJump(DialtactsActivity.class, true);
@@ -90,27 +87,6 @@ public class WelcomeActivity extends Activity {
     }
   }
 
-  private boolean isAccountExist() {
-    boolean isExists = false;
-    boolean isRegistered = isAccountRegistered();
-    if (isRegistered) {
-      isExists = true;
-    }
-    return isExists;
-  }
-
-  /**
-   * @return true if is registered, false else.
-   */
-  private boolean isAccountRegistered() {
-    if (BuildConfig.isDebug()) {
-      // return false;
-      return AppPreference.getAccount().length() > 0 || AppPreference.getUserId().length() > 0;
-    } else {
-      return AppPreference.getAccount().length() > 0 || AppPreference.getUserId().length() > 0;
-    }
-  }
-
   private void startupJump(final Class<?> clazz, final boolean isLogined) {
     Intent intent = new Intent(WelcomeActivity.this, clazz);
     intent.putExtra("isLogined", isLogined);
@@ -123,128 +99,79 @@ public class WelcomeActivity extends Activity {
       @Override
       public void onQueryAccountFinish(String isnewuser, String reason) {
         if (isnewuser.equals("0")) {
-          if (AppPreference.getControl() == 0) {
-            startGetSmsTask();
-            register();
-          } else if (AppPreference.getControl() == 1) {
-            RegisterAndManualBind();
-          } else if (AppPreference.getControl() == 2) {
-            register();
-          }
+          newAccountHandler();
         } else if (isnewuser.equals("1")) {
-          if (AppPreference.getControl() == 0) {
-            startGetSmsTask();
-            login();
-          } else if (AppPreference.getControl() == 1) {
-            LoginAndManualBind();
-          } else if (AppPreference.getControl() == 2) {
-            login();
-          }
+          oldAccountHandler();
         } else {
           if (!reason.equals(""))
             handleFailResult(reason);
         }
-      }
-
-      private void RegisterAndManualBind() {
-        startRegisterAndManualBindTask();
-      }
-
-      private void startRegisterAndManualBindTask() {
-        new RegisterTask(WelcomeActivity.this).execute(new RegisterTask.RegisterTaskListener() {
-
-          @Override
-          public void onRegisterFinish(boolean success, String reason) {
-            if (success) {
-              handleSuccessResult();
-            } else {
-              handleFailResult(reason);
-            }
-          }
-
-          private void handleSuccessResult() {
-            toResultActivity(true);
-          }
-
-          private void toResultActivity(boolean success) {
-            Intent intent = new Intent(WelcomeActivity.this, ManualBindMainActivity.class);
-            Bundle bundle = new Bundle();
-            bundle.putBoolean("showPwd", true);
-            bundle.putBoolean("success", success);
-            intent.putExtras(bundle);
-            startActivity(intent);
-            finish();
-          }
-        });
-      }
-
-      private void register() {
-        startRegisterTask();
-      }
-
-      private void startRegisterTask() {
-        new RegisterTask(WelcomeActivity.this).execute(new RegisterTask.RegisterTaskListener() {
-
-          @Override
-          public void onRegisterFinish(boolean success, String reason) {
-            if (success) {
-              handleSuccessResult();
-            } else {
-              handleFailResult(reason);
-            }
-          }
-
-          private void handleSuccessResult() {
-            toResultActivity(true);
-          }
-
-          private void toResultActivity(boolean success) {
-            Intent intent = new Intent(WelcomeActivity.this, FinalPromptActivity.class);
-            Bundle bundle = new Bundle();
-            bundle.putBoolean("showPwd", true);
-            bundle.putBoolean("success", success);
-            intent.putExtras(bundle);
-            startActivity(intent);
-            finish();
-          }
-        });
-      }
-
-      private void LoginAndManualBind() {
-        Intent intent = new Intent(WelcomeActivity.this, ManualBindMainActivity.class);
-        Bundle bundle = new Bundle();
-        bundle.putBoolean("showPwd", false);
-        bundle.putBoolean("success", true);
-        intent.putExtras(bundle);
-        startActivity(intent);
-        finish();
-      }
-
-      private void login() {
-        Intent intent = new Intent(WelcomeActivity.this, FinalPromptActivity.class);
-        Bundle bundle = new Bundle();
-        bundle.putBoolean("showPwd", false);
-        bundle.putBoolean("success", true);
-        intent.putExtras(bundle);
-        startActivity(intent);
-        finish();
       }
     });
   }
 
-  private void startGetSmsTask() {
-    new GetSmsTask(WelcomeActivity.this).execute(new GetSmsTask.GetSmsTaskListener() {
-      @Override
-      public void onGetSmsTaskFinish(boolean success, String reason) {
-        if (success) {
-          String address = AppPreference.getGatewayNumber();
-          sendSms.sendSms(address);
-        } else {
-          if (!reason.equals(""))
-            handleFailResult(reason);
-        }
-      }
-    });
+  private void oldAccountHandler() {
+    oldAccountAutoSendSms();
+    oldAccountHandSendSms();
+    oldAccountNotSendSms();
+  }
+
+  private void oldAccountNotSendSms() {
+    if (AppPreference.getControl() == 2) {
+      login(FinalPromptActivity.class, true);
+    }
+  }
+
+  private void oldAccountHandSendSms() {
+    if (AppPreference.getControl() == 1) {
+      login(ManualBindMainActivity.class, false);
+    }
+  }
+
+  private void oldAccountAutoSendSms() {
+    if (AppPreference.getControl() == 0) {
+      SendSmsHandler.getInstance(WelcomeActivity.this).startGetSmsTask();
+      login(FinalPromptActivity.class, true);
+    }
+  }
+
+  private void newAccountHandler() {
+    newAccountAutoSendSms();
+    newAccountHandSendSms();
+    newAccountNotSendSms();
+  }
+
+  private void newAccountNotSendSms() {
+    if (AppPreference.getControl() == 2) {
+      register(FinalPromptActivity.class);
+    }
+  }
+
+  private void newAccountHandSendSms() {
+    if (AppPreference.getControl() == 1) {
+      register(ManualBindMainActivity.class);
+    }
+  }
+
+  private void newAccountAutoSendSms() {
+    if (AppPreference.getControl() == 0) {
+      SendSmsHandler.getInstance(WelcomeActivity.this).startGetSmsTask();
+      register(FinalPromptActivity.class);
+    }
+  }
+
+  private void register(Class<?> clazz) {
+    RegisterHandler.getInstance(WelcomeActivity.this).startRegisterTask(clazz);
+  }
+
+  private void login(Class<?> clazz, boolean showPwd) {
+    Intent intent = new Intent(WelcomeActivity.this, clazz);
+    Bundle bundle = new Bundle();
+    bundle.putBoolean("showPwd", showPwd);
+    bundle.putBoolean("success", true);
+    intent.putExtras(bundle);
+    startActivity(intent);
+    finish();
   }
 
   private void handleFailResult(final String reason) {
