@@ -68,9 +68,7 @@ public class AccountRegisterActivity extends Activity {
         if (Account.isActive()) {
           getBalance();
         } else {
-          AppPreference.putUserId("");
-          AppPreference.putAccount("");
-          AppPreference.putMyNum("");
+          cleanAccountInfo();
           AppPreference.putImsi("");
           Intent intent = new Intent(AccountRegisterActivity.this, DialtactsActivity.class);
           intent.putExtra("isLogined", true);
@@ -78,6 +76,7 @@ public class AccountRegisterActivity extends Activity {
           finish();
         }
       }
+
     });
 
     Button login = (Button) findViewById(R.id.login_button);
@@ -90,10 +89,10 @@ public class AccountRegisterActivity extends Activity {
 
         String accountName = name.getText().toString();
         String password = pwd.getText().toString();
-        login(accountName, password);
+        loginTask(accountName, password);
       }
 
-      private void login(String accountName, String password) {
+      private void loginTask(String accountName, String password) {
         if (checkAccount(accountName, password)) {
           startLoginTask(accountName, password);
         }
@@ -112,6 +111,12 @@ public class AccountRegisterActivity extends Activity {
         finish();
       }
     });
+  }
+
+  private void cleanAccountInfo() {
+    AppPreference.putUserId("");
+    AppPreference.putAccount("");
+    AppPreference.putMyNum("");
   }
 
   private void handleFailResult(final String reason) {
@@ -148,133 +153,106 @@ public class AccountRegisterActivity extends Activity {
   }
 
   private void handleSuccessResult() {
-    toResultActivity(true);
-  }
-
-  private void toResultActivity(boolean success) {
-    Intent intent = new Intent(this, DialtactsActivity.class);
-    Bundle bundle = new Bundle();
-    bundle.putBoolean("success", success);
-    intent.putExtras(bundle);
-    startActivity(intent);
-    finish();
+    toResultActivity(DialtactsActivity.class, true);
   }
 
   private void getBalance() {
-    AppPreference.putUserId("");
-    AppPreference.putAccount("");
-    AppPreference.putMyNum("");
+    cleanAccountInfo();
     new QueryAccountTask(AccountRegisterActivity.this).execute(new QueryAccountTaskListener() {
       @Override
       public void onQueryAccountFinish(String isnewuser, String reason) {
         if (isnewuser.equals("0")) {
-          if (AppPreference.getControl() == 0) {
-            startGetSmsTask();
-            register();
-          } else if (AppPreference.getControl() == 1) {
-            RegisterAndManualBind();
-          } else if (AppPreference.getControl() == 2) {
-            register();
-          }
+          newAccountHandler();
         } else if (isnewuser.equals("1")) {
-          if (AppPreference.getControl() == 0) {
-            startGetSmsTask();
-            login();
-          } else if (AppPreference.getControl() == 1) {
-            LoginAndManualBind();
-          } else if (AppPreference.getControl() == 2) {
-            login();
-          }
+          oldAccountHandler();
         } else {
           if (!reason.equals(""))
             handleFailResult(reason);
         }
       }
 
-      private void RegisterAndManualBind() {
-        startRegisterAndManualBindTask();
+      private void oldAccountHandler() {
+        newAccountAutoSendSms();
+        newAccountHandSendSms();
+        newAccountNotSendSms();
       }
 
-      private void startRegisterAndManualBindTask() {
+      private void newAccountNotSendSms() {
+        if (AppPreference.getControl() == 2) {
+          toResultActivity(FinalPromptActivity.class, false);
+        }
+      }
+
+      private void newAccountHandSendSms() {
+        if (AppPreference.getControl() == 1) {
+          toResultActivity(ManualBindMainActivity.class, false);
+        }
+      }
+
+      private void newAccountAutoSendSms() {
+        if (AppPreference.getControl() == 0) {
+          startGetSmsTask();
+          toResultActivity(FinalPromptActivity.class, false);
+        }
+      }
+
+      private void newAccountHandler() {
+        oldAccountAutoSendSms();
+        oldAccountHandSendSms();
+        oldAccountNotSendSms();
+      }
+
+      private void oldAccountNotSendSms() {
+        if (AppPreference.getControl() == 2) {
+          register(FinalPromptActivity.class);
+        }
+      }
+
+      private void oldAccountHandSendSms() {
+        if (AppPreference.getControl() == 1) {
+          register(ManualBindMainActivity.class);
+        }
+      }
+
+      private void oldAccountAutoSendSms() {
+        if (AppPreference.getControl() == 0) {
+          startGetSmsTask();
+          register(FinalPromptActivity.class);
+        }
+      }
+
+      private void register(Class<?> clazz) {
+        startRegisterTask(clazz);
+      }
+
+      private void startRegisterTask(final Class<?> clazz) {
         new RegisterTask(AccountRegisterActivity.this).execute(new RegisterTask.RegisterTaskListener() {
 
           @Override
           public void onRegisterFinish(boolean success, String reason) {
             if (success) {
-              handleSuccessResult();
+              handleSuccessResult(clazz);
             } else {
               handleFailResult(reason);
             }
           }
 
-          private void handleSuccessResult() {
-            toResultActivity(true);
-          }
-
-          private void toResultActivity(boolean success) {
-            Intent intent = new Intent(AccountRegisterActivity.this, ManualBindMainActivity.class);
-            Bundle bundle = new Bundle();
-            bundle.putBoolean("showPwd", true);
-            bundle.putBoolean("success", success);
-            intent.putExtras(bundle);
-            startActivity(intent);
-            finish();
+          private void handleSuccessResult(Class<?> clazz) {
+            toResultActivity(clazz, true);
           }
         });
-      }
-
-      private void register() {
-        startRegisterTask();
-      }
-
-      private void startRegisterTask() {
-        new RegisterTask(AccountRegisterActivity.this).execute(new RegisterTask.RegisterTaskListener() {
-
-          @Override
-          public void onRegisterFinish(boolean success, String reason) {
-            if (success) {
-              handleSuccessResult();
-            } else {
-              handleFailResult(reason);
-            }
-          }
-
-          private void handleSuccessResult() {
-            toResultActivity(true);
-          }
-
-          private void toResultActivity(boolean success) {
-            Intent intent = new Intent(AccountRegisterActivity.this, FinalPromptActivity.class);
-            Bundle bundle = new Bundle();
-            bundle.putBoolean("showPwd", true);
-            bundle.putBoolean("success", success);
-            intent.putExtras(bundle);
-            startActivity(intent);
-            finish();
-          }
-        });
-      }
-
-      private void LoginAndManualBind() {
-        Intent intent = new Intent(AccountRegisterActivity.this, ManualBindMainActivity.class);
-        Bundle bundle = new Bundle();
-        bundle.putBoolean("showPwd", false);
-        bundle.putBoolean("success", true);
-        intent.putExtras(bundle);
-        startActivity(intent);
-        finish();
-      }
-
-      private void login() {
-        Intent intent = new Intent(AccountRegisterActivity.this, FinalPromptActivity.class);
-        Bundle bundle = new Bundle();
-        bundle.putBoolean("showPwd", false);
-        bundle.putBoolean("success", true);
-        intent.putExtras(bundle);
-        startActivity(intent);
-        finish();
       }
     });
+  }
+
+  private void toResultActivity(Class<?> clazz, boolean success) {
+    Intent intent = new Intent(AccountRegisterActivity.this, clazz);
+    Bundle bundle = new Bundle();
+    bundle.putBoolean("showPwd", true);
+    bundle.putBoolean("success", success);
+    intent.putExtras(bundle);
+    startActivity(intent);
+    finish();
   }
 
   private void startGetSmsTask() {
