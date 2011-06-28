@@ -252,6 +252,7 @@ public class CallScreenActivity extends Activity {
         mCallMonitor.listenAndAnswer(new CallMonitor.CallMonitorListener() {
             public void onListenTimeOvered() {
                 stopAndHideProgressbar();
+                cancelCallTask();
                 updateProgressText(R.string.calling_time_over);
                 showTimeOverMsgSecond();
                 Toast.makeText(CallScreenActivity.this, R.string.calling_time_over, Toast.LENGTH_LONG).show();
@@ -259,12 +260,14 @@ public class CallScreenActivity extends Activity {
 
             public void onCallRingWithoutAnswer() {
                 stopAndHideProgressbar();
+                cancelCallTask();
                 updateProgressText(R.string.calling_answer_by_self);
                 Toast.makeText(CallScreenActivity.this, R.string.calling_answer_by_self, Toast.LENGTH_LONG).show();
             }
             
             public void onCallAnswered() {
                 stopAndHideProgressbar();
+                cancelCallTask();
                 updateProgressText(R.string.calling_third);
                 Toast.makeText(CallScreenActivity.this, R.string.calling_third, Toast.LENGTH_LONG).show();
             }
