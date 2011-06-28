@@ -11,14 +11,9 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.PixelFormat;
-import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.os.Handler;
-import android.provider.ContactsContract;
-import android.provider.ContactsContract.CommonDataKinds.Phone;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.KeyEvent;
@@ -34,18 +29,13 @@ import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
-import android.widget.ImageView;
-import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.sqt001.ipcall.R;
-import com.sqt001.ipcall.contact.Account;
 import com.sqt001.ipcall.contact.ContactsCursor;
-import com.sqt001.ipcall.contact.NameColumn;
 import com.sqt001.ipcall.contact.NameQueryer;
 import com.sqt001.ipcall.contact.NumberQueryer;
-import com.sqt001.ipcall.provider.Constants;
 import com.sqt001.ipcall.provider.QuickContact;
 import com.sqt001.ipcall.provider.QuickContactDbHelper;
 import com.sqt001.ipcall.util.StrUitl;
@@ -69,6 +59,7 @@ public class ContactsListActivity extends ListActivity {
 	private WindowManager mWindowManager;
 	private TextView mDialogText;
 	private boolean mReady;
+	private Cursor mCursor;
 
 	@Override
 	protected void onCreate(Bundle icicle) {
@@ -195,18 +186,9 @@ public class ContactsListActivity extends ListActivity {
 	}
 
 	private void populateContactList() {
-		Cursor c = ContactsCursor.create(this).getContacts();
-		// startManagingCursor(c);
-		// ListAdapter adapter = getContactAdapter(c);
+	  mCursor = ContactsCursor.create(this).getContacts();
 		MyContactsAdapter adapter = new MyContactsAdapter(getData(), this);
 		setListAdapter(adapter);
-	}
-
-	private SimpleCursorAdapter getContactAdapter(Cursor c) {
-		String[] columns = NameColumn.create().getColumn();
-		return new SimpleCursorAdapter(this,
-				android.R.layout.simple_list_item_1, c, columns,
-				new int[] { android.R.id.text1 });
 	}
 
 	private void registerClickHandlerForListview() {
@@ -264,10 +246,15 @@ public class ContactsListActivity extends ListActivity {
 	}
 
 	private final Tuple<String[]> getContact(int position) {
-		Map map = (Map) getListAdapter().getItem(position);
+		Map map =(Map) getListAdapter().getItem(position);
 		String[] nameAry = (String[]) map.get("names");
-		String[] numAry = (String[]) map.get("numbers");
-
+		String[] numAry = null;
+		Integer i = (Integer) map.get("position");
+    if (i != null) {
+      mCursor.moveToPosition(i);
+      numAry = NumberQueryer.create(mCursor, this).query();
+      mCursor.close();
+    }
 		return new Tuple<String[]>(nameAry, numAry);
 	}
 
@@ -276,20 +263,6 @@ public class ContactsListActivity extends ListActivity {
 		String[] nameAry = (String[]) map.get("names");
 
 		return nameAry;
-	}
-
-	private void call(String name, String number) {
-		if (Account.activeAccountIfNeed(this)) {
-			return;
-		}
-
-		// start calling activity
-		Intent callIntent = new Intent(this, CallScreenActivity.class);
-		if (name != null) {
-			callIntent.putExtra(Constants.Call.CALLED_NAME, name);
-		}
-		callIntent.putExtra(Constants.Call.CALLED_NUM, number);
-		startActivity(callIntent);
 	}
 
 	private void registerContextMemuForListview() {
@@ -435,7 +408,6 @@ public class ContactsListActivity extends ListActivity {
 		public View getView(int position, View convertView, ViewGroup parent) {
 			Map<String, Object> map = dataList.get(position);
 			String[] name;
-			String photoID = "";
 			if (map != null) {
 				if (map.get("flag") == null) {
 					convertView = LayoutInflater.from(
@@ -443,17 +415,7 @@ public class ContactsListActivity extends ListActivity {
 							R.layout.contact_item1, null);
 					TextView textName = (TextView) convertView
 							.findViewById(R.id.textContactName);
-					ImageView imagePhoto = (ImageView) convertView
-							.findViewById(R.id.imageContactPhoto);
 					name = (String[]) map.get("names");
-					photoID = (String) map.get("photo");
-					if (photoID != null) {
-						Bitmap bitmap = getPhoto(ct, photoID);
-						BitmapDrawable bitmapDrawable = new BitmapDrawable(
-								bitmap);
-						if (bitmapDrawable != null)
-							imagePhoto.setImageDrawable(bitmapDrawable);
-					}
 					textName.setText(name[0]);
 				} else {
 					convertView = LayoutInflater.from(
@@ -475,11 +437,9 @@ public class ContactsListActivity extends ListActivity {
 		Cursor cursor = ContactsCursor.create(this).getContacts();
 		char curChar = 'a';
 		boolean isFirst = true;
+		int i = 0;
 		while (cursor.moveToNext()) {
-			int cPhoto = cursor.getColumnIndex(Phone.PHOTO_ID);
 			String[] nameAry = NameQueryer.create(cursor).query();
-			String[] numberAry = NumberQueryer.create(cursor, this).query();
-			String photo = cursor.getString(cPhoto);
 			String firstName = nameAry[0];
 			char firstChar = StrUitl.firstChar(firstName);
 			if (isFirst || curChar != firstChar) {
@@ -490,37 +450,11 @@ public class ContactsListActivity extends ListActivity {
 			}
 			map = new HashMap<String, Object>();
 			map.put("names", nameAry);
-			map.put("numbers", numberAry);
-			map.put("photo", photo);
+			map.put("position", i);
 			curChar = firstChar;
 			list.add(map);
+			i++;
 		}
 		return list;
 	}
-
-	// 获取联系人图片
-	public static Bitmap getPhoto(Context ct, Object photo_id) {
-		Bitmap bmp = BitmapFactory.decodeResource(ct.getResources(),
-				R.drawable.icon);
-		if (photo_id != "" && photo_id != null) {
-			String[] projection = new String[] { ContactsContract.Data.DATA15 };
-			String selection = "ContactsContract.Data._ID = "
-					+ photo_id.toString();
-			Cursor cur = ct.getContentResolver().query(
-					ContactsContract.Data.CONTENT_URI, projection, selection,
-					null, null);
-			if (cur != null) {
-				cur.moveToFirst();
-				byte[] contactIcon = null;
-				contactIcon = cur.getBlob(cur
-						.getColumnIndex(ContactsContract.Data.DATA15));
-				if (contactIcon != null) {
-					bmp = BitmapFactory.decodeByteArray(contactIcon, 0,
-							contactIcon.length);
-				}
-			}
-		}
-		return bmp;
-	}
-
 }
