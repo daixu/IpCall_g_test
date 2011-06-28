@@ -242,10 +242,6 @@ public class TwelveKeyDialer extends Activity {
   }
 
   private void setupMiniNumberPad() {
-    // Bundle bundle = this.getIntent().getExtras();
-    // String number = bundle.getString("number");
-    // Toast.makeText(TwelveKeyDialer.this, number, Toast.LENGTH_LONG).show();
-    // mDigits.setText(number);
     mNumberChooser = new MiniNumberPadAdapter();
     for (int id : new int[] { R.id.n0, R.id.n1, R.id.n2, R.id.n3, R.id.n4, R.id.n5, R.id.n6, R.id.n7, R.id.n8, R.id.n9,
         R.id.pound, R.id.star, R.id.keypad_del }) {
