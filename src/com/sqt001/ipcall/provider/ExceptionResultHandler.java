@@ -23,49 +23,49 @@ public class ExceptionResultHandler {
     registerListener(listener);
     handle(code, reason);
   }
-	
+
   private void registerListener(ExceptionResultHandlerListener listener) {
     unRegisterListener();
-    if(listener != null) {
+    if (listener != null) {
       mListener = listener;
     } else {
       mListener = new DefaultExceptionResultHandlerListener();
     }
   }
-	
+
   private void unRegisterListener() {
     mListener = null;
   }
-	
+
   private void handle(int code, String reason) {
     Handler handler = makeHandler(code);
     handler.handle(reason);
   }
-    
+
   /*
    * Create handler according code
    */
   private Handler makeHandler(int code) {
-    switch(code) {
-      case BaseRequest.NEED_INPUT_NUM_STATUS:
-        return new InputMyNumHandler();
-      case BaseRequest.ACCOUNT_EXCEPTION_STATUS:
-        return new AccountExceptionHandler();
-      case BaseRequest.OTHER_ERR_STATUS:
-        return new ShowMessageHandler();
-      case BaseRequest.NETWORK_EXCEPTION:
-        return new NetworkFailHandler();
+    switch (code) {
+    case BaseRequest.NEED_INPUT_NUM_STATUS:
+      return new InputMyNumHandler();
+    case BaseRequest.ACCOUNT_EXCEPTION_STATUS:
+      return new AccountExceptionHandler();
+    case BaseRequest.OTHER_ERR_STATUS:
+      return new ShowMessageHandler();
+    case BaseRequest.NETWORK_EXCEPTION:
+      return new NetworkFailHandler();
     }
-    return new NullHandler(); 
+    return new NullHandler();
   }
-	
+
   /*
    * Base class for all handler
    */
   private static abstract class Handler {
     public abstract boolean handle(String reason);
   }
-	
+
   /*
    * Null Object
    */
@@ -74,8 +74,8 @@ public class ExceptionResultHandler {
     public boolean handle(String reason) {
       return true;
     }
-  } //class NullHandler
-	
+  } // class NullHandler
+
   /*
    * Handle input number
    */
@@ -85,31 +85,30 @@ public class ExceptionResultHandler {
       handleInputMyNum(reason);
       return true;
     }
-	    
+
     private void handleInputMyNum(String reason) {
       CallerNumberSetter setter = new CallerNumberSetter();
       setter.show(mCtx, new CallerNumberSetter.Listener() {
-          @Override
-          public void onOk(String number) {
-            mListener.afterInputMyNum(true);
-          }
-                
-          @Override
-          public void onInputError() {
-            mListener.afterInputMyNum(false);
-          }
-                
-          @Override
-          public void onCancel() {
-            mListener.afterInputMyNum(true);
-          }
-        });
-    }
-  } //class InputMyNumHandler
+        @Override
+        public void onOk(String number) {
+          mListener.afterInputMyNum(true);
+        }
 
-	
+        @Override
+        public void onInputError() {
+          mListener.afterInputMyNum(false);
+        }
+
+        @Override
+        public void onCancel() {
+          mListener.afterInputMyNum(true);
+        }
+      });
+    }
+  } // class InputMyNumHandler
+
   /*
-   * Handle account exception. 
+   * Handle account exception.
    */
   private class AccountExceptionHandler extends Handler {
     @Override
@@ -119,28 +118,26 @@ public class ExceptionResultHandler {
     }
 
     private void handleAcountException(String reason) {
-      new AlertDialog.Builder(mCtx)  
-          .setTitle(mCtx.getString(R.string.account_exception))
-          .setMessage(reason)
+      new AlertDialog.Builder(mCtx).setTitle(mCtx.getString(R.string.account_exception)).setMessage(reason)
           .setPositiveButton(mCtx.getString(R.string.ok), new DialogInterface.OnClickListener() {
-              public void onClick(DialogInterface dialog, int which) {
-                sendExceptionSms();
-                mListener.afterAccountException(true);
-              }
-            })
-          .setNegativeButton(mCtx.getString(R.string.cancel), new DialogInterface.OnClickListener() {
-              public void onClick(DialogInterface dialog, int which) {
-                mListener.afterAccountException(false);
-              }
-            })
-          .show();
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+              sendExceptionSms();
+              mListener.afterAccountException(true);
+            }
+          }).setNegativeButton(mCtx.getString(R.string.cancel), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+              mListener.afterAccountException(false);
+            }
+          }).show();
     }
 
     private void sendExceptionSms() {
-        Account.activeAccount(mCtx);
+      Account.activeAccount(mCtx);
     }
-  } //class AccountExceptionHandler
-	
+  } // class AccountExceptionHandler
+
   /*
    * Show exception message
    */
@@ -155,15 +152,15 @@ public class ExceptionResultHandler {
      * Show other exception message.
      */
     private void handleOtherException(String reason) {
-      new AboutDlg(mCtx).show(mCtx.getString(R.string.exception), reason,  new DialogInterface.OnClickListener() {
-          @Override
-          public void onClick(DialogInterface dialog, int which) {
-            mListener.handleOtherException();
-          }
-        });
+      new AboutDlg(mCtx).show(mCtx.getString(R.string.exception), reason, new DialogInterface.OnClickListener() {
+        @Override
+        public void onClick(DialogInterface dialog, int which) {
+          mListener.handleOtherException();
+        }
+      });
     }
   }
-	
+
   /*
    * Show exception message
    */
@@ -178,32 +175,45 @@ public class ExceptionResultHandler {
      * Show other exception message.
      */
     private void handleNetworkException(String reason) {
-      new AlertDialog.Builder(mCtx)  
-          .setTitle(mCtx.getString(R.string.exception))
+      new AlertDialog.Builder(mCtx).setTitle(mCtx.getString(R.string.exception))
           .setMessage(mCtx.getString(R.string.network_exception))
-          .setPositiveButton(mCtx.getString(R.string.ok),  new DialogInterface.OnClickListener() {
-              public void onClick(DialogInterface dialog, int which) {
-                mListener.handleNetWorkFail();
-              }
-            })
-          .show();
+          .setPositiveButton(mCtx.getString(R.string.ok), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+              mListener.handleNetWorkFail();
+            }
+          }).show();
     }
   }
-	
+
   /*
    * Notify the user to input number
    */
   public interface ExceptionResultHandlerListener {
     public void afterInputMyNum(boolean trueIfOk);
+
     public void handleNetWorkFail();
+
     public void afterAccountException(boolean trueIfOk);
+
     public void handleOtherException();
   }
-	
+
   static class DefaultExceptionResultHandlerListener implements ExceptionResultHandlerListener {
-    public void afterInputMyNum(boolean trueIfOk) {};
-    public void handleNetWorkFail() {};
-    public void afterAccountException(boolean trueIfOk) {};
-    public void handleOtherException() {};
+    @Override
+    public void afterInputMyNum(boolean trueIfOk) {
+    };
+
+    @Override
+    public void handleNetWorkFail() {
+    };
+
+    @Override
+    public void afterAccountException(boolean trueIfOk) {
+    };
+
+    @Override
+    public void handleOtherException() {
+    };
   }
 }

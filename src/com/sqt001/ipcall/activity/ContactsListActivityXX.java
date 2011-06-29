@@ -44,6 +44,7 @@ import com.sqt001.ipcall.util.Tuple;
 public class ContactsListActivityXX extends ListActivity {
 
   private final class RemoveWindow implements Runnable {
+    @Override
     public void run() {
       removeWindow();
     }
@@ -60,7 +61,7 @@ public class ContactsListActivityXX extends ListActivity {
   @Override
   protected void onCreate(Bundle icicle) {
     super.onCreate(icicle);
-    
+
     requestWindowFeature(Window.FEATURE_CUSTOM_TITLE);
     setContentView(R.layout.contacts_list);
     getWindow().setFeatureInt(Window.FEATURE_CUSTOM_TITLE, R.layout.contacts_title);
@@ -71,6 +72,7 @@ public class ContactsListActivityXX extends ListActivity {
 
     mHandler.post(new Runnable() {
 
+      @Override
       public void run() {
         mReady = true;
         WindowManager.LayoutParams lp = new WindowManager.LayoutParams(LayoutParams.WRAP_CONTENT,
@@ -146,7 +148,7 @@ public class ContactsListActivityXX extends ListActivity {
           char ch = StrUitl.firstChar(name);
           String value = String.valueOf(ch);
           char firstLetter = value.charAt(0);
-          if (!mShowing && firstLetter != mPrevLetter) {
+          if (!mShowing && (firstLetter != mPrevLetter)) {
             mShowing = true;
             mDialogText.setVisibility(View.VISIBLE);
           }

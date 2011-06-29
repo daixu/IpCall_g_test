@@ -9,7 +9,7 @@ import com.sqt001.ipcall.provider.RegisterTask;
 
 public class RegisterHandler {
   private Activity mActivity;
-  
+
   private RegisterHandler(Activity activity) {
     mActivity = activity;
   }

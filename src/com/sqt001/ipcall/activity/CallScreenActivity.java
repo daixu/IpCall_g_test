@@ -77,7 +77,7 @@ public class CallScreenActivity extends Activity {
       return true;
     }
 
-    if (mCallerNumber != null && mCallerNumber.length() >= 4) {
+    if ((mCallerNumber != null) && (mCallerNumber.length() >= 4)) {
       return true;
     }
 
@@ -111,7 +111,7 @@ public class CallScreenActivity extends Activity {
   }
 
   private boolean validateCalled() {
-    if (mCalledNumber == null || mCalledNumber.length() < 4) {
+    if ((mCalledNumber == null) || (mCalledNumber.length() < 4)) {
       new AlertDialog.Builder(this).setTitle(getString(R.string.exception))
           .setMessage(getString(R.string.called_number_err))
           .setPositiveButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
@@ -141,7 +141,7 @@ public class CallScreenActivity extends Activity {
     TextView t = (TextView) findViewById(R.id.calling_text_second);
     String format = getString(R.string.calling_time_over_second);
     String msg = null;
-    if (mCallerNumber != null && mCallerNumber.length() > 0) {
+    if ((mCallerNumber != null) && (mCallerNumber.length() > 0)) {
       msg = String.format(format, mCallerNumber);
     } else {
       msg = String.format(format, "");
@@ -170,7 +170,7 @@ public class CallScreenActivity extends Activity {
 
   private void showNumbers() {
     // show called
-    String called = (mCalledName != null && mCalledName.length() > 0) ? mCalledName : mCalledNumber;
+    String called = ((mCalledName != null) && (mCalledName.length() > 0)) ? mCalledName : mCalledNumber;
     TextView nameText = (TextView) findViewById(R.id.calling_name);
     nameText.setText(called);
   }
@@ -208,24 +208,29 @@ public class CallScreenActivity extends Activity {
 
     // start new task
     mCallTask = new CallTask(this).execute(mCalledNumber, mCallerNumber, new CallTask.CallTaskListener() {
+      @Override
       public void onCancelGetCall() {
         cancelCallTask();
       }
 
+      @Override
       public void onGetCallSuc() {
         int id = AppPreference.isGingerbreadOrLater() ? R.string.calling_second_no_answer : R.string.calling_second;
         updateProgressText(id);
       }
 
+      @Override
       public void onExceptionResult() {
         cancelCallMonitor();
       }
 
+      @Override
       public void onInputMyNum() {
         startCallTask();
         startCallMonitor();
       }
 
+      @Override
       public void onCallTaskFail() {
         cancelCallTask();
         cancelCallMonitor();
@@ -235,12 +240,12 @@ public class CallScreenActivity extends Activity {
   }
 
   private void cancelCallTask() {
-    if (mCallTask != null && mCallTask.getStatus() == UserTask.Status.RUNNING) {
+    if ((mCallTask != null) && (mCallTask.getStatus() == UserTask.Status.RUNNING)) {
       mCallTask.cancel(true);
       mCallTask = null;
     }
   }
-  
+
   class TeleListener extends PhoneStateListener {
 
     @Override
@@ -265,6 +270,7 @@ public class CallScreenActivity extends Activity {
       mCallMonitor = new CallMonitor(this);
     }
     mCallMonitor.listenAndAnswer(new CallMonitor.CallMonitorListener() {
+      @Override
       public void onListenTimeOvered() {
         stopAndHideProgressbar();
         cancelCallTask();
@@ -273,6 +279,7 @@ public class CallScreenActivity extends Activity {
         Toast.makeText(CallScreenActivity.this, R.string.calling_time_over, Toast.LENGTH_LONG).show();
       }
 
+      @Override
       public void onCallRingWithoutAnswer() {
         stopAndHideProgressbar();
         cancelCallTask();
@@ -280,6 +287,7 @@ public class CallScreenActivity extends Activity {
         Toast.makeText(CallScreenActivity.this, R.string.calling_answer_by_self, Toast.LENGTH_LONG).show();
       }
 
+      @Override
       public void onCallAnswered() {
         stopAndHideProgressbar();
         cancelCallTask();
@@ -287,6 +295,7 @@ public class CallScreenActivity extends Activity {
         Toast.makeText(CallScreenActivity.this, R.string.calling_third, Toast.LENGTH_LONG).show();
       }
 
+      @Override
       public void onCallEnd() {
         endCallScreen();
       }

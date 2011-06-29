@@ -10,14 +10,14 @@ import android.content.Context;
 
 import com.sqt001.ipcall.application.AppPreference;
 
-public class GetSmsRequest extends BaseRequest{
+public class GetSmsRequest extends BaseRequest {
 
   private static final String KCGetSMS = "KCGetSMS";
-  
-  public GetSmsRequest(Context context ){
+
+  public GetSmsRequest(Context context) {
     super(context);
   }
-  
+
   @Override
   protected void onCreateRequest(XmlSerializer serializer) {
     try {
@@ -27,7 +27,8 @@ public class GetSmsRequest extends BaseRequest{
     }
   }
 
-  private void tryOnCreateRequest(XmlSerializer serializer) throws IllegalArgumentException, IllegalStateException,IOException {
+  private void tryOnCreateRequest(XmlSerializer serializer) throws IllegalArgumentException, IllegalStateException,
+      IOException {
     serializer.attribute(Constants.Xml.NULL, Constants.Xml.TYPE, KCGetSMS);
   }
 
@@ -45,7 +46,7 @@ public class GetSmsRequest extends BaseRequest{
   private void accessNumber(XmlPullParser parser) throws XmlPullParserException, IOException {
     if (Constants.Xml.SMS.equals(parser.getName())) {
       String gatewayNumberStr = parser.nextText();
-      if (gatewayNumberStr != null && gatewayNumberStr.length() > 0) {
+      if ((gatewayNumberStr != null) && (gatewayNumberStr.length() > 0)) {
         AppPreference.putGatewayNumber(gatewayNumberStr);
       }
     }

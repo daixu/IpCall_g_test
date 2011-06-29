@@ -16,7 +16,7 @@ public class Constants {
     public static final String PASSWD = "password";
     public static final String PHONE = "phone";
     public static final String MONEY = "money";
-    public static final String ORDERID= "orderid";
+    public static final String ORDERID = "orderid";
     public static final String TEXT = "text";
     public static final String URL = "url";
     public static final String ABOUT = "about";
@@ -38,19 +38,19 @@ public class Constants {
     public static final String TITLE = "title";
     public static final String MESSAGE = "message";
   }
-  
+
   public static class Call {
-      public static final String CALLED_NUM = "called_num";
-      public static final String CALLED_NAME = "called_name";
+    public static final String CALLED_NUM = "called_num";
+    public static final String CALLED_NAME = "called_name";
   }
-  
+
   public static class Info {
-      public static final String NUMBER = "075588321332";
-      public static final String NEWDING_URL = "http://www.newding.com";
+    public static final String NUMBER = "075588321332";
+    public static final String NEWDING_URL = "http://www.newding.com";
   }
-  
+
   public static class Other {
-      public static final String HTTP_HEAD = "http://";
-      public static final String HTC200_IMSI = "460030911111111";
+    public static final String HTTP_HEAD = "http://";
+    public static final String HTC200_IMSI = "460030911111111";
   }
 }

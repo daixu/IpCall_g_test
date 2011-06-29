@@ -15,7 +15,7 @@ public class LoginRequest extends BaseRequest {
   private String mLoginAccount = null;
   private String mLoginPassword = null;
 
-  public LoginRequest(Context context,String loginAccount, String loginPassowrd) {
+  public LoginRequest(Context context, String loginAccount, String loginPassowrd) {
     super(context);
     mLoginAccount = loginAccount;
     mLoginPassword = loginPassowrd;
@@ -43,14 +43,17 @@ public class LoginRequest extends BaseRequest {
   protected void onParseResponse(int event, XmlPullParser parser) {
     if (Constants.Xml.NEWUSER.equals(parser.getName())) {
       String userIdStr = parser.getAttributeValue(null, Constants.Xml.UID);
-      if (userIdStr != null && userIdStr.length() > 0)
+      if ((userIdStr != null) && (userIdStr.length() > 0)) {
         AppPreference.putUserId(userIdStr);
+      }
       String callerStr = parser.getAttributeValue(null, Constants.Xml.CALLER);
-      if (callerStr != null && callerStr.length() > 0) 
+      if ((callerStr != null) && (callerStr.length() > 0)) {
         AppPreference.putMyNum(callerStr);
+      }
       String passwordStr = parser.getAttributeValue(null, Constants.Xml.PASSWORD);
-      if(passwordStr != null && passwordStr.length() > 0) 
+      if ((passwordStr != null) && (passwordStr.length() > 0)) {
         AppPreference.putPassword(passwordStr);
+      }
     }
   }
 }

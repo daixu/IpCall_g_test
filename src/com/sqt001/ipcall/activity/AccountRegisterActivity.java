@@ -130,7 +130,8 @@ public class AccountRegisterActivity extends Activity {
 
   private boolean checkAccount(String accountName, String password) {
     boolean isSuccess = true;
-    if (accountName.length() < 6 || accountName.length() > 12 || password.length() < 6 || password.length() > 12) {
+    if ((accountName.length() < 6) || (accountName.length() > 12) || (password.length() < 6)
+        || (password.length() > 12)) {
       Toast.makeText(this, "帐号或密码长度错误", Toast.LENGTH_LONG).show();
       isSuccess = false;
     }
@@ -166,8 +167,9 @@ public class AccountRegisterActivity extends Activity {
         } else if (isnewuser.equals("1")) {
           oldAccountHandler();
         } else {
-          if (!reason.equals(""))
+          if (!reason.equals("")) {
             handleFailResult(reason);
+          }
         }
       }
 
@@ -263,8 +265,9 @@ public class AccountRegisterActivity extends Activity {
           String address = AppPreference.getGatewayNumber();
           sendSms.sendSms(address);
         } else {
-          if (!reason.equals(""))
+          if (!reason.equals("")) {
             handleFailResult(reason);
+          }
         }
       }
     });
@@ -272,7 +275,7 @@ public class AccountRegisterActivity extends Activity {
 
   @Override
   public boolean onKeyDown(int keyCode, KeyEvent event) {
-    if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {
+    if ((keyCode == KeyEvent.KEYCODE_BACK) && (event.getRepeatCount() == 0)) {
       Intent intent = new Intent(AccountRegisterActivity.this, DialtactsActivity.class);
       intent.putExtra("success", true);
       startActivity(intent);

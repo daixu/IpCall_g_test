@@ -19,42 +19,36 @@ import android.widget.TextView;
  * about.show("Title", "Message');
  */
 public class AboutDlg {
-    private Context context;
-    
-    public AboutDlg(Context context) {
-        this.context = context;
-    }
-    
-    public void show(String title, String message) {
-        show(title, message, null);
-    }
-    
-    public void show(String title, String message, DialogInterface.OnClickListener listener) {
-        final ScrollView view = getTextView(message);
+  private Context context;
 
-        new AlertDialog.Builder(context)
-        .setTitle(title)
-        .setCancelable(true)
-        .setIcon(android.R.drawable.ic_dialog_info)
-        .setPositiveButton(R.string.ok , listener)
-        .setView(view)
-        .create()
-        .show();
-    }
+  public AboutDlg(Context context) {
+    this.context = context;
+  }
 
-    private ScrollView getTextView(String message) {
-        ScrollView svMessage = new ScrollView(context); 
-        TextView tvMessage = new TextView(context);
+  public void show(String title, String message) {
+    show(title, message, null);
+  }
 
-        SpannableString spanText = new SpannableString(IOUtils.toUnixString(message));
+  public void show(String title, String message, DialogInterface.OnClickListener listener) {
+    final ScrollView view = getTextView(message);
 
-        Linkify.addLinks(spanText, Linkify.ALL);
-        tvMessage.setText(spanText);
-        tvMessage.setMovementMethod(LinkMovementMethod.getInstance());
+    new AlertDialog.Builder(context).setTitle(title).setCancelable(true).setIcon(android.R.drawable.ic_dialog_info)
+        .setPositiveButton(R.string.ok, listener).setView(view).create().show();
+  }
 
-        svMessage.setPadding(14, 2, 10, 12);
-        svMessage.addView(tvMessage);
+  private ScrollView getTextView(String message) {
+    ScrollView svMessage = new ScrollView(context);
+    TextView tvMessage = new TextView(context);
 
-        return svMessage;
-    }
+    SpannableString spanText = new SpannableString(IOUtils.toUnixString(message));
+
+    Linkify.addLinks(spanText, Linkify.ALL);
+    tvMessage.setText(spanText);
+    tvMessage.setMovementMethod(LinkMovementMethod.getInstance());
+
+    svMessage.setPadding(14, 2, 10, 12);
+    svMessage.addView(tvMessage);
+
+    return svMessage;
+  }
 }

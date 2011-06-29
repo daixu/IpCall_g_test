@@ -103,8 +103,9 @@ public class WelcomeActivity extends Activity {
         } else if (isnewuser.equals("1")) {
           oldAccountHandler();
         } else {
-          if (!reason.equals(""))
+          if (!reason.equals("")) {
             handleFailResult(reason);
+          }
         }
       }
     });

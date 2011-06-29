@@ -133,10 +133,11 @@ public class FinalPromptActivity extends Activity {
 
             new AlertDialog.Builder(FinalPromptActivity.this).setTitle(R.string.input_new_password).setView(layout)
                 .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                  @Override
                   public void onClick(DialogInterface dialog, int whichButton) {
                     String password = mEditText.getText().toString();
                     String oldPwd = AppPreference.getPassword();
-                    if (password.length() >= 6 && password.length() <= 12 && oldPwd.length() > 0) {
+                    if ((password.length() >= 6) && (password.length() <= 12) && (oldPwd.length() > 0)) {
                       modify(oldPwd, password);
                     } else {
                       Toast.makeText(FinalPromptActivity.this, "密码长度错误", Toast.LENGTH_LONG).show();
@@ -144,6 +145,7 @@ public class FinalPromptActivity extends Activity {
                     }
                   }
                 }).setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                  @Override
                   public void onClick(DialogInterface dialog, int whichButton) {
                   }
                 }).create().show();

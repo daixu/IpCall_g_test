@@ -34,7 +34,7 @@ public class ForgetPwdActivity extends Activity {
         String number = name.getText().toString();
         int count = number.length();
         System.out.println(count);
-        if (number.length() >= 6 && number.length() <= 12) {
+        if ((number.length() >= 6) && (number.length() <= 12)) {
           getPwd(number);
         } else {
           Toast.makeText(ForgetPwdActivity.this, "帐号输入错误", Toast.LENGTH_LONG).show();

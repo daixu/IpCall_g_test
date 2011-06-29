@@ -21,7 +21,7 @@ public class Tuple<A> {
    * @param elements The elements of the tuple
    * @return A new tuple that contains {@code elements}
    */
-  public static <A> Tuple<A> of(A ... elements) {
+  public static <A> Tuple<A> of(A... elements) {
     return new Tuple<A>(elements);
   }
 
@@ -30,7 +30,7 @@ public class Tuple<A> {
    *
    * @param elements The elements of the tuple.
    */
-  public Tuple(A ... elements) {
+  public Tuple(A... elements) {
     this.elements = elements;
   }
 
@@ -60,7 +60,7 @@ public class Tuple<A> {
       return true;
     }
 
-    if (o == null || o.getClass() != this.getClass()) {
+    if ((o == null) || (o.getClass() != this.getClass())) {
       return false;
     }
 

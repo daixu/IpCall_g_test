@@ -13,21 +13,21 @@ import android.content.Context;
  * String message = util.getStringfromRawResource(rawResId);
  */
 public class ResourceUtils {
-    private static final String EMPTY_STRING = "";
-    private Context context;
-    
-    public ResourceUtils(Context context) {
-        this.context = context;
+  private static final String EMPTY_STRING = "";
+  private Context context;
+
+  public ResourceUtils(Context context) {
+    this.context = context;
+  }
+
+  public String getStringFromRawResource(int rawResId) {
+    InputStream is = context.getResources().openRawResource(rawResId);
+    String result = null;
+    try {
+      result = IOUtils.toString(is);// TextUtilies.convertStreamToStringWithBreakLine(is);
+    } catch (IOException e) {
+      result = EMPTY_STRING;
     }
-    
-    public String getStringFromRawResource(int rawResId) {
-        InputStream is = context.getResources().openRawResource(rawResId);   
-        String result = null;
-        try {
-            result = IOUtils.toString(is);// TextUtilies.convertStreamToStringWithBreakLine(is);
-        } catch (IOException e) {
-            result = EMPTY_STRING;
-        }
-        return result;
-    }
+    return result;
+  }
 }

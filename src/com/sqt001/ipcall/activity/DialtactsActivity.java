@@ -71,49 +71,29 @@ public class DialtactsActivity extends TabActivity implements TabHost.OnTabChang
         .setContent(intent));
   }
 
+  @Override
   public void onTabChanged(String arg0) {
   }
 
   /*
    * 判断手机卡的联网状态
    */
-  /*private void getNetworkStatus() {
-    TelephonyManager telephonyManager = (TelephonyManager) this.getSystemService(Context.TELEPHONY_SERVICE);
-    // 蓝牙服务
-    ContentResolver cr = this.getContentResolver();
-    String tmps = android.provider.Settings.System.getString(cr, android.provider.Settings.System.BLUETOOTH_ON);
-    if (tmps.equals("1")) {
-      // 已经打开的操作
-      new AlertDialog.Builder(DialtactsActivity.this).setMessage(R.string.bluetooth_serve_opened)
-          .setPositiveButton("ok", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int which) {
-            }
-          }).create().show();
-    } else {
-      // 未打开的操作
-      new AlertDialog.Builder(DialtactsActivity.this).setMessage(R.string.bluetooth_serve_closed)
-          .setPositiveButton("ok", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int which) {
-            }
-          }).create().show();
-    }
-
-    // 飞行模式是否打开
-    tmps = android.provider.Settings.System.getString(cr, android.provider.Settings.System.AIRPLANE_MODE_ON);
-    if (tmps.equals("1")) {
-      // 已经打开的操作
-      new AlertDialog.Builder(DialtactsActivity.this).setMessage(R.string.flight_mode_opened)
-          .setPositiveButton("ok", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int which) {
-            }
-          }).create().show();
-    } else {
-      // 未打开的操作
-      new AlertDialog.Builder(DialtactsActivity.this).setMessage(R.string.flight_mode_closed)
-          .setPositiveButton("ok", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int which) {
-            }
-          }).create().show();
-    }
-  }*/
+  /*
+   * private void getNetworkStatus() { TelephonyManager telephonyManager = (TelephonyManager)
+   * this.getSystemService(Context.TELEPHONY_SERVICE); // 蓝牙服务 ContentResolver cr = this.getContentResolver(); String
+   * tmps = android.provider.Settings.System.getString(cr, android.provider.Settings.System.BLUETOOTH_ON); if
+   * (tmps.equals("1")) { // 已经打开的操作 new
+   * AlertDialog.Builder(DialtactsActivity.this).setMessage(R.string.bluetooth_serve_opened) .setPositiveButton("ok",
+   * new DialogInterface.OnClickListener() { public void onClick(DialogInterface dialog, int which) { }
+   * }).create().show(); } else { // 未打开的操作 new
+   * AlertDialog.Builder(DialtactsActivity.this).setMessage(R.string.bluetooth_serve_closed) .setPositiveButton("ok",
+   * new DialogInterface.OnClickListener() { public void onClick(DialogInterface dialog, int which) { }
+   * }).create().show(); } // 飞行模式是否打开 tmps = android.provider.Settings.System.getString(cr,
+   * android.provider.Settings.System.AIRPLANE_MODE_ON); if (tmps.equals("1")) { // 已经打开的操作 new
+   * AlertDialog.Builder(DialtactsActivity.this).setMessage(R.string.flight_mode_opened) .setPositiveButton("ok", new
+   * DialogInterface.OnClickListener() { public void onClick(DialogInterface dialog, int which) { } }).create().show();
+   * } else { // 未打开的操作 new AlertDialog.Builder(DialtactsActivity.this).setMessage(R.string.flight_mode_closed)
+   * .setPositiveButton("ok", new DialogInterface.OnClickListener() { public void onClick(DialogInterface dialog, int
+   * which) { } }).create().show(); } }
+   */
 }

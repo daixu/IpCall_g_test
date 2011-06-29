@@ -1,8 +1,8 @@
 package com.sqt001.ipcall.contact;
 
-import com.sqt001.ipcall.application.AppPreference;
-
 import android.database.Cursor;
+
+import com.sqt001.ipcall.application.AppPreference;
 
 /**
  * <p>Query contact name.</p>
@@ -12,31 +12,28 @@ import android.database.Cursor;
  * </p>
  */
 public abstract class NameQueryer {
-    protected static final String EMPTY_NAME = "";
-    private Cursor cursor;
-    
-    public static NameQueryer create(Cursor cursor) {
-        if(AppPreference.isEclairOrLater()) {
-            return new NameQueryerNew(cursor);
-        } else {
-            return new NameQueryerOld(cursor);
-        }
-    }
+  protected static final String EMPTY_NAME = "";
+  private Cursor cursor;
 
-    public NameQueryer(Cursor cursor) {
-        this.cursor = cursor;
+  public static NameQueryer create(Cursor cursor) {
+    if (AppPreference.isEclairOrLater()) {
+      return new NameQueryerNew(cursor);
+    } else {
+      return new NameQueryerOld(cursor);
     }
+  }
 
-    public String[] query() {
-        return onQuery();
-    }
+  public NameQueryer(Cursor cursor) {
+    this.cursor = cursor;
+  }
 
-    protected Cursor getCursor() {
-        return cursor;
-    }
+  public String[] query() {
+    return onQuery();
+  }
 
-    protected abstract String[] onQuery();
+  protected Cursor getCursor() {
+    return cursor;
+  }
+
+  protected abstract String[] onQuery();
 }
-
-
-

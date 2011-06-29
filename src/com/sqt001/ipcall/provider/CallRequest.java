@@ -14,8 +14,8 @@ public class CallRequest extends BaseRequest {
   private static final String KCMAKECALL = "KCMakeCall";
   private String mCalledNumber = null;
   private String mCallerNumber = null;
-	
-  public CallRequest(Context context,String calledNumber, String callerNumber) {
+
+  public CallRequest(Context context, String calledNumber, String callerNumber) {
     super(context);
     mCalledNumber = calledNumber;
     mCallerNumber = callerNumber;
@@ -26,46 +26,46 @@ public class CallRequest extends BaseRequest {
     try {
       tryOnCreateRequest(serializer);
     } catch (IOException e) {
-      throw new RuntimeException(e);   
-    }  
+      throw new RuntimeException(e);
+    }
   }
-	
-  private void tryOnCreateRequest(XmlSerializer serializer) throws IllegalArgumentException, IllegalStateException, IOException {
+
+  private void tryOnCreateRequest(XmlSerializer serializer) throws IllegalArgumentException, IllegalStateException,
+      IOException {
     serializer.attribute(Constants.Xml.NULL, Constants.Xml.TYPE, KCMAKECALL);
 
-    serializer.startTag(Constants.Xml.NULL, Constants.Xml.CALLER);  
-    serializer.attribute(Constants.Xml.NULL, Constants.Xml.NUMBER, mCallerNumber);  
-    serializer.endTag(Constants.Xml.NULL, Constants.Xml.CALLER);  
-        
-    serializer.startTag(Constants.Xml.NULL, Constants.Xml.CALLED);  
-    serializer.attribute(Constants.Xml.NULL, Constants.Xml.NUMBER, mCalledNumber);  
-    serializer.endTag(Constants.Xml.NULL, Constants.Xml.CALLED);  
+    serializer.startTag(Constants.Xml.NULL, Constants.Xml.CALLER);
+    serializer.attribute(Constants.Xml.NULL, Constants.Xml.NUMBER, mCallerNumber);
+    serializer.endTag(Constants.Xml.NULL, Constants.Xml.CALLER);
+
+    serializer.startTag(Constants.Xml.NULL, Constants.Xml.CALLED);
+    serializer.attribute(Constants.Xml.NULL, Constants.Xml.NUMBER, mCalledNumber);
+    serializer.endTag(Constants.Xml.NULL, Constants.Xml.CALLED);
   }
 
   @Override
   protected void onParseResponse(int event, XmlPullParser parser) {
-      try {
-        parseAboutInfo(parser);
+    try {
+      parseAboutInfo(parser);
     } catch (XmlPullParserException e) {
-        // do nothing
+      // do nothing
     } catch (IOException e) {
-        // do nothing
+      // do nothing
     }
   }
-  
+
   private void parseAboutInfo(XmlPullParser parser) throws XmlPullParserException, IOException {
-    if(Constants.Xml.ABOUT.equals(parser.getName())) {
+    if (Constants.Xml.ABOUT.equals(parser.getName())) {
       String aboutStr = parser.nextText();
-      if(aboutStr != null && aboutStr.length() > 1) {
+      if ((aboutStr != null) && (aboutStr.length() > 1)) {
         AppPreference.putAbout(aboutStr);
       }
-    }
-    else if(Constants.Xml.SERVICENUM.equals(parser.getName())) {
+    } else if (Constants.Xml.SERVICENUM.equals(parser.getName())) {
       String serviceNumStr = parser.nextText();
-      if(serviceNumStr != null && serviceNumStr.length() > 1) {
+      if ((serviceNumStr != null) && (serviceNumStr.length() > 1)) {
         AppPreference.putServiceCallNum(serviceNumStr);
       }
     }
-  } //parseAboutInfo
-  
+  } // parseAboutInfo
+
 }

@@ -5,7 +5,6 @@ import android.content.Context;
 import com.sqt001.ipcall.R;
 import com.sqt001.ipcall.util.UserTask;
 
-
 /*
  * Class GetBlanceTask do the task of getting
  * User Register from server.
@@ -36,19 +35,21 @@ public class RegisterTask extends UserTask<Void, Void, String> implements BaseRe
   }
 
   @Override
-  public void onPreExecute() {	
+  public void onPreExecute() {
   }
 
   @Override
   public void onCancelled() {
   }
 
+  @Override
   public String doInBackground(Void... values) {
     mGetBalanceRequest = new BalanceRequest(mCtx);
     mGetBalanceRequest.post(this);
     return null;
   }
 
+  @Override
   public void onRequestProcessInfo(String info) {
   }
 
@@ -58,31 +59,32 @@ public class RegisterTask extends UserTask<Void, Void, String> implements BaseRe
 
   @Override
   public void onPostExecute(String result) {
-    if(!isCancelled())
+    if (!isCancelled()) {
       handleResult(result);
+    }
   }
 
-  private void handleResult(String result) {	
+  private void handleResult(String result) {
     int resultCode = mGetBalanceRequest.getResuleCode();
-    if(BaseRequest.NORMAL_STATUS == resultCode) {
+    if (BaseRequest.NORMAL_STATUS == resultCode) {
       handleNormalResult();
     } else {
       String reason = mGetBalanceRequest.getReason();
-      if(BaseRequest.NETWORK_EXCEPTION == resultCode) {
+      if (BaseRequest.NETWORK_EXCEPTION == resultCode) {
         reason = mCtx.getString(R.string.network_exception);
       }
       handleExceptionResult(reason);
     }
   }
-  
+
   private void handleNormalResult() {
-    if(mListener != null) {
+    if (mListener != null) {
       mListener.onRegisterFinish(true, "");
     }
-  }  
+  }
 
   private void handleExceptionResult(final String reason) {
-    if(mListener != null) {
+    if (mListener != null) {
       mListener.onRegisterFinish(false, reason);
     }
   }

@@ -71,7 +71,7 @@ public class GetSmsTask extends UserTask<Void, Void, String> implements BaseRequ
       handleExceptionResult("", reason);
     }
   }
-  
+
   private void handleNormalResult() {
     if (mListener != null) {
       mListener.onGetSmsTaskFinish(true, "");
@@ -79,7 +79,7 @@ public class GetSmsTask extends UserTask<Void, Void, String> implements BaseRequ
   }
 
   private void handleExceptionResult(final String address, String reason) {
-    if(mListener != null) {
+    if (mListener != null) {
       mListener.onGetSmsTaskFinish(false, reason);
     }
   }

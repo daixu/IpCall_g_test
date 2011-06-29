@@ -23,7 +23,7 @@ public class ModifyAccountPwdActivity extends Activity {
     requestWindowFeature(Window.FEATURE_CUSTOM_TITLE);
     setContentView(R.layout.update_password);
     getWindow().setFeatureInt(Window.FEATURE_CUSTOM_TITLE, R.layout.modify_password_title);
-    
+
     Button submit = (Button) findViewById(R.id.submit_button);
     submit.setOnClickListener(new Button.OnClickListener() {
 
@@ -34,8 +34,8 @@ public class ModifyAccountPwdActivity extends Activity {
 
         String oldPassword = oldPwd.getText().toString();
         String newPassword = newPwd.getText().toString();
-        if (newPassword.length() >= 6 && newPassword.length() <= 12 && oldPassword.length() >= 6
-            && oldPassword.length() <= 12) {
+        if ((newPassword.length() >= 6) && (newPassword.length() <= 12) && (oldPassword.length() >= 6)
+            && (oldPassword.length() <= 12)) {
           modify(oldPassword, newPassword);
         } else {
           Toast.makeText(ModifyAccountPwdActivity.this, "密码长度错误", Toast.LENGTH_LONG).show();

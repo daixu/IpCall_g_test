@@ -54,8 +54,9 @@ public abstract class BaseRequest {
   private String mReason = null;
 
   private RequestListener mListener = null;
-  
+
   private Context mContext;
+
   public BaseRequest(Context context) {
     mContext = context;
   }
@@ -89,14 +90,14 @@ public abstract class BaseRequest {
     Log.v("log", request);
     Log.v("request", request);
     // post and get reponse
-    if (request == null || request.length() <= 0) {
+    if ((request == null) || (request.length() <= 0)) {
       throw new IllegalStateException("createRequest fail");
     }
-    
+
     String response = postAndGetResponse(request);
     Log.v("log", response);
     // parse response
-    if (response == null || response.length() <= 0) {
+    if ((response == null) || (response.length() <= 0)) {
       throw new IllegalStateException("postAndGetResponse fail");
     }
     LogUtil.w("--------yyyyyyyyyyy-----------");
@@ -148,12 +149,12 @@ public abstract class BaseRequest {
         serializer.endTag("", "imei");
 
         serializer.startTag("", "imsi");
-//        serializer.text("RmKW-EHkUM6Cn-lx7aWnKC-vOfofQSI-pw7P");
-//        serializer.text("460020239514289");
+        // serializer.text("RmKW-EHkUM6Cn-lx7aWnKC-vOfofQSI-pw7P");
+        // serializer.text("460020239514289");
         String imsi = AppPreference.getImsi();
-//        String imsi = "460020239514289";
+        // String imsi = "460020239514289";
         serializer.text(imsi);
-        LogUtil.w("imsi: "+ imsi);
+        LogUtil.w("imsi: " + imsi);
         serializer.endTag("", "imsi");
 
         serializer.startTag("", "channelID");
@@ -247,7 +248,7 @@ public abstract class BaseRequest {
 
     int event = parser.getEventType();
     boolean stopParse = false;
-    while (event != XmlPullParser.END_DOCUMENT && !stopParse) {
+    while ((event != XmlPullParser.END_DOCUMENT) && !stopParse) {
       switch (event) {
       case XmlPullParser.START_DOCUMENT: {
         break;
@@ -266,33 +267,35 @@ public abstract class BaseRequest {
           }
         } else if (TAG_REASON.equals(parserName)) {
           setReason(parser.nextText());
-          if (getResuleCode() != 0 && getResuleCode() != 4) {
+          if ((getResuleCode() != 0) && (getResuleCode() != 4)) {
             stopParse = true;
           }
         } else if (TAG_USERID.equals(parserName)) {
           String userId = parser.getAttributeValue(null, ATT_UID);
-          if(userId != null && userId.length() > 0)
+          if ((userId != null) && (userId.length() > 0)) {
             setUserId(userId);
+          }
           String callerStr = parser.getAttributeValue(null, Constants.Xml.CALLER);
-          if((callerStr != null) && (callerStr.length() > 0) && (!callerStr.equals(""))){
+          if ((callerStr != null) && (callerStr.length() > 0) && (!callerStr.equals(""))) {
             AppPreference.putAccount(callerStr);
           }
           String passwordStr = parser.getAttributeValue(null, Constants.Xml.PASSWORD);
-          if(passwordStr != null && passwordStr.length() > 0)
+          if ((passwordStr != null) && (passwordStr.length() > 0)) {
             AppPreference.putPassword(passwordStr);
-        } else if (TAG_PREFER.equals(parserName) && parser.getDepth() == 4) {
+          }
+        } else if (TAG_PREFER.equals(parserName) && (parser.getDepth() == 4)) {
           String message = parser.nextText();
-          if (message != null && message.length() > 0) {
+          if ((message != null) && (message.length() > 0)) {
             AppPreference.putMessage(message);
           }
           setPrefer(message);
-        } else if(TAG_ABOUT.equals(parserName)){
+        } else if (TAG_ABOUT.equals(parserName)) {
           String about = parser.nextText();
           System.out.println(about);
-          if (about != null && about.length() > 0) {
+          if ((about != null) && (about.length() > 0)) {
             AppPreference.putAbout(about);
           }
-        }else {
+        } else {
           onParseResponse(event, parser);
         }
         break;
@@ -323,7 +326,7 @@ public abstract class BaseRequest {
   }
 
   private void setUserId(String userId) {
-    if (userId != null && userId.length() > 0) {
+    if ((userId != null) && (userId.length() > 0)) {
       AppPreference.putUserId(userId);
     }
   }

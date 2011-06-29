@@ -9,7 +9,7 @@ import com.sqt001.ipcall.activity.AccountActiveProgress;
 import com.sqt001.ipcall.application.AppPreference;
 import com.sqt001.ipcall.util.UserTask;
 
-public class QueryAccountTask extends UserTask<Void, Void, String> implements BaseRequest.RequestListener{
+public class QueryAccountTask extends UserTask<Void, Void, String> implements BaseRequest.RequestListener {
   private BalanceRequest mGetBalanceRequest;
   private QueryAccountTaskListener mListener;
   private ProgressDialog mProgressDlg;
@@ -49,12 +49,14 @@ public class QueryAccountTask extends UserTask<Void, Void, String> implements Ba
     mProgressDlg.dismiss();
   }
 
+  @Override
   public String doInBackground(Void... values) {
     mGetBalanceRequest = new BalanceRequest(mActivity);
     mGetBalanceRequest.post(this);
     return null;
   }
 
+  @Override
   public void onRequestProcessInfo(String info) {
   }
 
@@ -65,7 +67,7 @@ public class QueryAccountTask extends UserTask<Void, Void, String> implements Ba
   @Override
   public void onPostExecute(String result) {
     mProgressDlg.dismiss();
-    if(!isCancelled()) {
+    if (!isCancelled()) {
       handleResult(result);
     }
   }
@@ -73,16 +75,16 @@ public class QueryAccountTask extends UserTask<Void, Void, String> implements Ba
   private void handleResult(String result) {
     int resultCode = mGetBalanceRequest.getResuleCode();
     int isnewuser = AppPreference.getIsnewuser();
-    if(BaseRequest.NORMAL_STATUS == resultCode && isnewuser==0) {
+    if ((BaseRequest.NORMAL_STATUS == resultCode) && (isnewuser == 0)) {
       handleNewAccount();
-    } else if (BaseRequest.NORMAL_STATUS == resultCode && isnewuser==1) {
+    } else if ((BaseRequest.NORMAL_STATUS == resultCode) && (isnewuser == 1)) {
       handleOldAccount();
-    } else{
+    } else {
       String reason = mGetBalanceRequest.getReason();
       handleExceptionResult(reason);
     }
   }
-  
+
   private void handleExceptionResult(final String reason) {
     Intent intent = new Intent(mActivity, AccountActiveProgress.class);
     mActivity.startActivity(intent);
@@ -90,13 +92,13 @@ public class QueryAccountTask extends UserTask<Void, Void, String> implements Ba
   }
 
   private void handleNewAccount() {
-    if(mListener != null) {
+    if (mListener != null) {
       mListener.onQueryAccountFinish("0", "");
     }
-  }  
+  }
 
   private void handleOldAccount() {
-    if(mListener != null) {
+    if (mListener != null) {
       mListener.onQueryAccountFinish("1", "");
     }
   }

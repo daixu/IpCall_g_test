@@ -42,7 +42,7 @@ public class AccountActiveActivity extends Activity {
       @Override
       public void onClick(View v) {
         System.exit(0);
-//        finish();
+        // finish();
       }
     });
 
@@ -54,7 +54,7 @@ public class AccountActiveActivity extends Activity {
       }
     });
   }
-  
+
   private void startActiveProgress() {
     Intent intent = new Intent(this, AccountActiveProgress.class);
     startActivity(intent);

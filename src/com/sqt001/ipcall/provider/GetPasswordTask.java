@@ -8,24 +8,25 @@ import com.sqt001.ipcall.R;
 import com.sqt001.ipcall.util.UserTask;
 
 public class GetPasswordTask extends UserTask<Void, Void, String> implements BaseRequest.RequestListener {
-  
+
   private GetPasswordRequest mGetPasswordRequest;
   private GetPasswordListener mListener;
   private Context mCtx;
   private String mNumber;
   private ProgressDialog mProgressDlg;
-  
-  public GetPasswordTask(Context context){
+
+  public GetPasswordTask(Context context) {
     super();
     mCtx = context;
   }
-  
-  public GetPasswordTask execute(String number, GetPasswordListener listener){
+
+  public GetPasswordTask execute(String number, GetPasswordListener listener) {
     loginListener(listener);
     setGetPasswordInfo(number);
     execute();
     return this;
   }
+
   private void loginListener(GetPasswordListener listener) {
     unLoginListener();
     mListener = listener;
@@ -38,9 +39,9 @@ public class GetPasswordTask extends UserTask<Void, Void, String> implements Bas
   private void setGetPasswordInfo(String number) {
     mNumber = number;
   }
-  
+
   @Override
-  public void onPreExecute(){
+  public void onPreExecute() {
     mProgressDlg = new ProgressDialog(mCtx);
     mProgressDlg.setProgressStyle(ProgressDialog.STYLE_SPINNER);
     mProgressDlg.setMessage(mCtx.getString(R.string.get_password));
@@ -51,18 +52,18 @@ public class GetPasswordTask extends UserTask<Void, Void, String> implements Bas
   public void onCancelled() {
     mProgressDlg.dismiss();
   }
-  
+
   @Override
   public void onRequestProcessInfo(String info) {
   }
 
   @Override
   public String doInBackground(Void... params) {
-    mGetPasswordRequest = new GetPasswordRequest(mCtx,mNumber);
+    mGetPasswordRequest = new GetPasswordRequest(mCtx, mNumber);
     mGetPasswordRequest.post(this);
     return null;
   }
-  
+
   @Override
   public void onProgressUpdate(Void... values) {
   }
@@ -74,7 +75,7 @@ public class GetPasswordTask extends UserTask<Void, Void, String> implements Bas
       handleResult(result);
     }
   }
-  
+
   private void handleResult(String result) {
     int resultCode = mGetPasswordRequest.getResuleCode();
     Log.i("resultCode", String.valueOf(resultCode));
@@ -84,8 +85,7 @@ public class GetPasswordTask extends UserTask<Void, Void, String> implements Bas
       String reason = mGetPasswordRequest.getReason();
       reason = mCtx.getString(R.string.account_unbind);
       handleExceptionResult(reason);
-    }
-    else {
+    } else {
       String reason = mGetPasswordRequest.getReason();
       if (BaseRequest.NETWORK_EXCEPTION == resultCode) {
         reason = mCtx.getString(R.string.network_exception);
@@ -105,7 +105,7 @@ public class GetPasswordTask extends UserTask<Void, Void, String> implements Bas
       mListener.onGetPasswordFinish(true, "");
     }
   }
-  
+
   public static interface GetPasswordListener {
     public void onGetPasswordFinish(boolean success, String reason);
   }

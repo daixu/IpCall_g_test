@@ -16,34 +16,34 @@ import com.sqt001.ipcall.provider.Constants;
 public class Account {
   public static boolean isImsiActive() {
     String imsi = AppPreference.getImsi();
-    if(imsi == null) {
+    if (imsi == null) {
       return false;
     }
 
-    if(!BuildConfig.isTestingHtc200() && imsi.equals(Constants.Other.HTC200_IMSI)) {
+    if (!BuildConfig.isTestingHtc200() && imsi.equals(Constants.Other.HTC200_IMSI)) {
       return false;
     }
 
-    return imsi.length() == AppPreference.IMSI_MININUM_LENGTH || imsi.length() == AppPreference.IMSI_MAXMIUM_LENGTH;
+    return (imsi.length() == AppPreference.IMSI_MININUM_LENGTH) || (imsi.length() == AppPreference.IMSI_MAXMIUM_LENGTH);
   }
 
   public static boolean isGuidActive() {
     String imsi = AppPreference.getImsi();
-    if(imsi == null) {
+    if (imsi == null) {
       return false;
     }
-    return imsi.length() ==  AppPreference.IMSI_MAXMIUM_LENGTH;
+    return imsi.length() == AppPreference.IMSI_MAXMIUM_LENGTH;
   }
 
   public static boolean isActive() {
-    if(isImsiActive() || isGuidActive()) {
+    if (isImsiActive() || isGuidActive()) {
       return true;
     }
     return false;
   }
 
   public static boolean activeAccountIfNeed(final Context context) {
-    if(!isActive()) {
+    if (!isActive()) {
       queryActiveAccount(context);
       return true;
     }
@@ -51,37 +51,33 @@ public class Account {
   }
 
   public static void queryReActiveAccount(final Context context) {
-    new AlertDialog.Builder(context)
-    .setMessage(context.getString(R.string.reset_caller_hint))
-    .setPositiveButton(context.getString(R.string.ok), new OnClickListener() {
-      @Override
-      public void onClick(DialogInterface dialog, int which) {
-        activeAccount(context);
-      }
-    })
-    .show();
+    new AlertDialog.Builder(context).setMessage(context.getString(R.string.reset_caller_hint))
+        .setPositiveButton(context.getString(R.string.ok), new OnClickListener() {
+          @Override
+          public void onClick(DialogInterface dialog, int which) {
+            activeAccount(context);
+          }
+        }).show();
   }
 
   public static void queryActiveAccount(final Context context) {
-    new AlertDialog.Builder(context)
-    .setTitle(context.getString(R.string.active_count))
-    .setMessage(context.getString(R.string.active_count_msg))
-    .setPositiveButton(context.getString(R.string.ok), new OnClickListener() {
-      @Override
-      public void onClick(DialogInterface dialog, int which) {
-        activeAccount(context);
-      }
-    })
-    .show();
+    new AlertDialog.Builder(context).setTitle(context.getString(R.string.active_count))
+        .setMessage(context.getString(R.string.active_count_msg))
+        .setPositiveButton(context.getString(R.string.ok), new OnClickListener() {
+          @Override
+          public void onClick(DialogInterface dialog, int which) {
+            activeAccount(context);
+          }
+        }).show();
   }
 
   public static void activeAccount(final Context context) {
-    Intent intent=new Intent(context, AccountActiveActivity.class);
+    Intent intent = new Intent(context, AccountActiveActivity.class);
     context.startActivity(intent);
   }
-  
+
   public static void activeAccountForResult(final Activity activity, int requestCode) {
-    Intent intent=new Intent(activity, AccountActiveActivity.class);
+    Intent intent = new Intent(activity, AccountActiveActivity.class);
     activity.startActivityForResult(intent, requestCode);
   }
 }

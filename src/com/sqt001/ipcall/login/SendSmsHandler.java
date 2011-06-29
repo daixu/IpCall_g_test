@@ -36,8 +36,9 @@ public class SendSmsHandler {
   }
 
   private void handleFail(String reason) {
-    if (!reason.equals(""))
+    if (!reason.equals("")) {
       handleFailResult(reason);
+    }
   }
 
   private void handleFailResult(final String reason) {

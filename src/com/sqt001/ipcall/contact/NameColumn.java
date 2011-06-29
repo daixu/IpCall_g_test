@@ -10,17 +10,17 @@ import com.sqt001.ipcall.application.AppPreference;
  * </p>
  */
 public abstract class NameColumn {
-    public static NameColumn create() {
-        if(AppPreference.isEclairOrLater()) {
-            return new NameColumnNew();
-        } else {
-            return new NameColumnOld();
-        }
+  public static NameColumn create() {
+    if (AppPreference.isEclairOrLater()) {
+      return new NameColumnNew();
+    } else {
+      return new NameColumnOld();
     }
-    
-    public String[] getColumn() {
-        return onGetNameColumn();
-    }
-    
-    protected abstract String[] onGetNameColumn();
+  }
+
+  public String[] getColumn() {
+    return onGetNameColumn();
+  }
+
+  protected abstract String[] onGetNameColumn();
 }

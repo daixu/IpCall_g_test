@@ -15,27 +15,27 @@ import com.sqt001.ipcall.application.AppPreference;
  * </p>
  */
 public abstract class ContactsCursor {
-    protected Context context;
+  protected Context context;
 
-    public static ContactsCursor create(Context context) {
-        if(AppPreference.isEclairOrLater()) {
-            return new ContactsCursorNew(context);
-        } else {
-            return new ContactsCursorOld(context);
-        }
+  public static ContactsCursor create(Context context) {
+    if (AppPreference.isEclairOrLater()) {
+      return new ContactsCursorNew(context);
+    } else {
+      return new ContactsCursorOld(context);
     }
+  }
 
-    public ContactsCursor(Context context) {
-        this.context = context;
-    }
+  public ContactsCursor(Context context) {
+    this.context = context;
+  }
 
-    public Cursor getContacts() {
-        return onGetContacts();
-    }
+  public Cursor getContacts() {
+    return onGetContacts();
+  }
 
-    protected abstract Cursor onGetContacts();
+  protected abstract Cursor onGetContacts();
 
-    protected  Uri getContactContentUri() {
-        return  ContactContentUri.create().getUri();
-    }
+  protected Uri getContactContentUri() {
+    return ContactContentUri.create().getUri();
+  }
 }

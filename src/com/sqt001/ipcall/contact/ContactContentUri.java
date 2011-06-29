@@ -1,8 +1,8 @@
 package com.sqt001.ipcall.contact;
 
-import com.sqt001.ipcall.application.AppPreference;
-
 import android.net.Uri;
+
+import com.sqt001.ipcall.application.AppPreference;
 
 /**
  * <p>Get contact content URI.</p>
@@ -13,17 +13,17 @@ import android.net.Uri;
  *</p>
  */
 public abstract class ContactContentUri {
-    public static ContactContentUri create() {
-        if(AppPreference.isEclairOrLater()) {
-            return new ContactContentUriNew();
-        } else {
-            return new ContactContentUriOld();
-        }
+  public static ContactContentUri create() {
+    if (AppPreference.isEclairOrLater()) {
+      return new ContactContentUriNew();
+    } else {
+      return new ContactContentUriOld();
     }
+  }
 
-    public Uri getUri() {
-        return onGetUri();
-    }
+  public Uri getUri() {
+    return onGetUri();
+  }
 
-    protected abstract Uri onGetUri();
+  protected abstract Uri onGetUri();
 }

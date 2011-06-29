@@ -65,14 +65,15 @@ public class BindTask extends UserTask<Void, Void, String> implements BaseReques
   @Override
   public void onPostExecute(String result) {
     mProgressDlg.dismiss();
-    if (!isCancelled())
+    if (!isCancelled()) {
       handleResult(result);
+    }
   }
 
   private void handleResult(String result) {
     int resultCode = mGetBalanceRequest.getResuleCode();
     String number = AppPreference.getAccount();
-    if (number.length()>0) {
+    if (number.length() > 0) {
       handleNormalResult();
     } else if (resultCode == 3) {
       String reason = mGetBalanceRequest.getReason();
@@ -86,7 +87,7 @@ public class BindTask extends UserTask<Void, Void, String> implements BaseReques
       handleExceptionResult(reason);
     }
   }
-  
+
   private void handleNormalResult() {
     if (mListener != null) {
       mListener.onBindFinish(true, "");

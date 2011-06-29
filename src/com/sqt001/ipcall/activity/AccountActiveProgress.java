@@ -31,7 +31,7 @@ import com.sqt001.ipcall.util.UserTask;
  * 
  */
 public class AccountActiveProgress extends Activity implements OnClickListener {
-  private final String TAG="AccountActiveProgress";
+  private final String TAG = "AccountActiveProgress";
 
   public static final String SMS_BASE64_TABLE = "abcdVWXefgQRSTUYZhijKLMNOPuvwxyzGHIJklmnopDEFstABCqr2345601789!.";
   private static final String SMS_DEST_NUMBER = "075588321332";
@@ -44,7 +44,7 @@ public class AccountActiveProgress extends Activity implements OnClickListener {
 
   private volatile int mResultCode = -1;
 
-  private static final int WAITSMSDURATION = 30*1000;
+  private static final int WAITSMSDURATION = 30 * 1000;
   private static final int TIME_TO_EXIT_PROGRESS = 1;
   private static final int SMS_SENT_SUC = 2;
   private static final int SMS_SENT_FAIL = 3;
@@ -106,21 +106,21 @@ public class AccountActiveProgress extends Activity implements OnClickListener {
 
     mProgressBar = (ProgressBar) findViewById(R.id.progress_bar);
     mProgressBar.setIndeterminate(true);
-    
+
     // Hide button till progress is being displayed
     mOkPanel = findViewById(R.id.ok_panel);
-    mOkButton = (Button)findViewById(R.id.ok_button);
+    mOkButton = (Button) findViewById(R.id.ok_button);
     mOkButton.setOnClickListener(this);
     mOkPanel.setVisibility(View.INVISIBLE);
   }
-  
+
   private void initIconView() {
     View appSnippet = findViewById(R.id.app_snippet);
-    ((ImageView)appSnippet.findViewById(R.id.app_icon)).setBackgroundResource(R.drawable.icon);
+    ((ImageView) appSnippet.findViewById(R.id.app_icon)).setBackgroundResource(R.drawable.icon);
   }
 
   private void setStatusText(int resId) {
-    mStatusTextView = (TextView)findViewById(R.id.center_text);
+    mStatusTextView = (TextView) findViewById(R.id.center_text);
     mStatusTextView.setText(resId);
   }
 
@@ -129,7 +129,6 @@ public class AccountActiveProgress extends Activity implements OnClickListener {
     mOkPanel.setVisibility(View.VISIBLE);
   }
 
-
   /**
    * Listen the sending of sms.
    */
@@ -137,7 +136,7 @@ public class AccountActiveProgress extends Activity implements OnClickListener {
 
   private void sendSms() {
     try {
-      if(mSmsListener == null) {
+      if (mSmsListener == null) {
         mSmsListener = new SmsSendListener();
       }
       trySendSms(mSmsListener);
@@ -151,22 +150,13 @@ public class AccountActiveProgress extends Activity implements OnClickListener {
   private void trySendSms(SmsSendListener listener) throws IOException {
     String guid = AppPreference.generateGuidAsAccount();
     /*
-    String content = "s_"
-      + "g=" + guid
-      + "&"
-      + "c=" + AppPreference.getChannel()
-      + "&"
-      + "v=" + AppPreference.getVersion();
-    */
-    String content = "g_"
-      + guid
-      + "&"
-      + AppPreference.getChannel()
-      + "&"
-      + "cc";
-    
+     * String content = "s_" + "g=" + guid + "&" + "c=" + AppPreference.getChannel() + "&" + "v=" +
+     * AppPreference.getVersion();
+     */
+    String content = "g_" + guid + "&" + AppPreference.getChannel() + "&" + "cc";
+
     String smsContent = Base64.encode(content, SMS_BASE64_TABLE);
-    if(mSmsSender == null) {
+    if (mSmsSender == null) {
       mSmsSender = new SmsSender(this);
     }
     mSmsSender.sendSMS(SMS_DEST_NUMBER, smsContent, listener, listener);
@@ -177,17 +167,16 @@ public class AccountActiveProgress extends Activity implements OnClickListener {
     public void onReceive(Context context, Intent intent) {
       int resultCode = getResultCode();
       String actionName = intent.getAction();
-      if(actionName.equals(SmsSender.SENT_ACTION)) {
+      if (actionName.equals(SmsSender.SENT_ACTION)) {
         handleSmsSend(resultCode);
-      }
-      else if(actionName.equals(SmsSender.DELIVERED_ACTION)){
+      } else if (actionName.equals(SmsSender.DELIVERED_ACTION)) {
         handleSmsDeliver(resultCode);
       }
     }
 
     private void handleSmsSend(int resultCode) {
       Message message = new Message();
-      switch(resultCode) {
+      switch (resultCode) {
       case Activity.RESULT_OK:
         message.what = SMS_SENT_SUC;
         break;
@@ -212,26 +201,26 @@ public class AccountActiveProgress extends Activity implements OnClickListener {
       }
       mHandler.sendMessage(message);
     }
-  } //class SmsSendListener
+  } // class SmsSendListener
 
   private void handleSmsSendSuc() {
-//    LogUtil.toast(this, "Sms Send Suc");
+    // LogUtil.toast(this, "Sms Send Suc");
     setStatusText(R.string.activating_sms_sent);
   }
 
   private void handleSmsSendFail() {
-//    LogUtil.toast(this, "Sms Send Fail");
+    // LogUtil.toast(this, "Sms Send Fail");
     stopProgressBar();
     setStatusText(R.string.sms_active_fail);
   }
 
   private void handleSmsDeliverSuc() {
-//    LogUtil.toast(this, "Sms deliver Suc");
+    // LogUtil.toast(this, "Sms deliver Suc");
     setStatusText(R.string.activating_sms_deliver);
   }
 
   private void handleSmsDeliverFail() {
-//    LogUtil.toast(this, "Sms deliver fail");
+    // LogUtil.toast(this, "Sms deliver fail");
     stopProgressBar();
     setStatusText(R.string.sms_active_fail);
   }
@@ -246,7 +235,7 @@ public class AccountActiveProgress extends Activity implements OnClickListener {
   private Timer mTimer;
 
   private void createTimerTask(final int what, final int duration) {
-    if(mTimer != null) {
+    if (mTimer != null) {
       mTimer.cancel();
     }
     mTimer = new Timer();
@@ -266,20 +255,22 @@ public class AccountActiveProgress extends Activity implements OnClickListener {
     stopProgressBar();
     setStatusText(R.string.activating_finish);
   }
-  
+
   private void balance() {
     startBalanceTask();
   }
 
   private void startBalanceTask() {
     mBalanceTask = new UnImsiRegisterTask(this).execute(new UnImsiRegisterTask.BalanceTaskListener() {
+      @Override
       public void onCancelGetBalance() {
-        if (mBalanceTask != null && mBalanceTask.getStatus() == UserTask.Status.RUNNING) {
+        if ((mBalanceTask != null) && (mBalanceTask.getStatus() == UserTask.Status.RUNNING)) {
           mBalanceTask.cancel(true);
           mBalanceTask = null;
         }
       }
 
+      @Override
       public void afterInputMyNum() {
         balance();
       }
@@ -288,12 +279,12 @@ public class AccountActiveProgress extends Activity implements OnClickListener {
 
   @Override
   public void onClick(View v) {
-    if(v == mOkButton) {
+    if (v == mOkButton) {
       AppPreference.putUserId("");
       AppPreference.putAccount("");
       AppPreference.putMyNum("");
       balance();
-      //setResultAndFinish(0);
+      // setResultAndFinish(0);
     }
   }
 

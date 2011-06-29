@@ -60,7 +60,7 @@ public class LoginTask extends UserTask<Void, Void, String> implements BaseReque
 
   @Override
   public String doInBackground(Void... values) {
-    mLoginRequest = new LoginRequest(mCtx,mAccount, mPassword);
+    mLoginRequest = new LoginRequest(mCtx, mAccount, mPassword);
     mLoginRequest.post(this);
     return null;
   }

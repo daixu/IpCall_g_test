@@ -47,6 +47,7 @@ public class AccountCenterActivity extends Activity {
   boolean isBind = false;
   private BroadcastReceiver mReceiver;
 
+  @Override
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.account_center_layout);
@@ -70,12 +71,12 @@ public class AccountCenterActivity extends Activity {
     mId = (TextView) findViewById(R.id.id_field);
     String id = AppPreference.getUserId();
     mId.setText(id);
-    if (AppPreference.getAccount().equals("") || AppPreference.getAccount().length() == 0) {
+    if (AppPreference.getAccount().equals("") || (AppPreference.getAccount().length() == 0)) {
       mBindPhone.setText(Html.fromHtml("<a><u>未绑定号码</u></a>"));
     } else {
-      if (AppPreference.getAccount().length() > 0 && !AppPreference.getAccount().equals("")) {
+      if ((AppPreference.getAccount().length() > 0) && !AppPreference.getAccount().equals("")) {
         String account = AppPreference.getAccount();
-        mBindPhone.setText(account); 
+        mBindPhone.setText(account);
       }
       isBind = true;
     }
@@ -112,13 +113,15 @@ public class AccountCenterActivity extends Activity {
 
       private void startBalanceTask() {
         mBalanceTask = new BalanceTask(AccountCenterActivity.this).execute(new BalanceTask.BalanceTaskListener() {
+          @Override
           public void onCancelGetBalance() {
-            if (mBalanceTask != null && mBalanceTask.getStatus() == UserTask.Status.RUNNING) {
+            if ((mBalanceTask != null) && (mBalanceTask.getStatus() == UserTask.Status.RUNNING)) {
               mBalanceTask.cancel(true);
               mBalanceTask = null;
             }
           }
 
+          @Override
           public void afterInputMyNum() {
             balance();
           }
@@ -161,8 +164,9 @@ public class AccountCenterActivity extends Activity {
               sendSms.sendSms(address);
               bind();
             } else {
-              if (!reason.equals(""))
+              if (!reason.equals("")) {
                 handleFailResult(reason);
+              }
             }
           }
         });
@@ -311,7 +315,7 @@ public class AccountCenterActivity extends Activity {
 
   private void handleCallOptionItemSelected() {
     String num = AppPreference.getServiceCallNum();
-    if (num != null && num.length() >= 8) {
+    if ((num != null) && (num.length() >= 8)) {
       Intent phoneIntent = new Intent("android.intent.action.CALL", Uri.parse("tel:" + num));
       startActivity(phoneIntent);
     }
@@ -325,7 +329,7 @@ public class AccountCenterActivity extends Activity {
     mUpdateTask = new UpdateTask(this).execute(new UpdateTask.UpdateTaskListener() {
       @Override
       public void onCancelGetUpdate() {
-        if (mUpdateTask != null && mUpdateTask.getStatus() == UserTask.Status.RUNNING) {
+        if ((mUpdateTask != null) && (mUpdateTask.getStatus() == UserTask.Status.RUNNING)) {
           mUpdateTask.cancel(true);
           mUpdateTask = null;
         }
@@ -355,7 +359,7 @@ public class AccountCenterActivity extends Activity {
 
   @Override
   public boolean onKeyDown(int keyCode, KeyEvent event) {
-    if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {
+    if ((keyCode == KeyEvent.KEYCODE_BACK) && (event.getRepeatCount() == 0)) {
       new AlertDialog.Builder(AccountCenterActivity.this).setTitle(R.string.exit)
           .setIcon(android.R.drawable.ic_menu_info_details).setMessage(R.string.really_exit)
           .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {

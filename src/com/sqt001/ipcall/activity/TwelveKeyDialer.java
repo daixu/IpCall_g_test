@@ -109,8 +109,9 @@ public class TwelveKeyDialer extends Activity {
 
   private void initNumber() {
     String number = this.getIntent().getExtras().getString("number");
-    if (number != null)
+    if (number != null) {
       mDigits.setText(number);
+    }
   }
 
   @Override
@@ -151,7 +152,7 @@ public class TwelveKeyDialer extends Activity {
   private void hideSoftKeyboardForNumberEdit() {
     mDigits.setInputType(android.text.InputType.TYPE_NULL);
 
-    InputMethodManager imm = (InputMethodManager) getSystemService(Activity.INPUT_METHOD_SERVICE);
+    InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
     imm.hideSoftInputFromWindow(mDigits.getWindowToken(), 0);
   }
 
@@ -399,7 +400,7 @@ public class TwelveKeyDialer extends Activity {
     Intent callIntent = new Intent(this, CallScreenActivity.class);
     callIntent.putExtra(Constants.Call.CALLED_NUM, number);
     String name = NameLookup.create().getName(this, number);
-    if ("".equals(name) || name == null || name.length() == 0) {
+    if ("".equals(name) || (name == null) || (name.length() == 0)) {
       name = number;
     }
     callIntent.putExtra(Constants.Call.CALLED_NAME, name);
@@ -589,7 +590,7 @@ public class TwelveKeyDialer extends Activity {
 
   private void handleCallOptionItemSelected() {
     String num = AppPreference.getServiceCallNum();
-    if (num != null && num.length() >= 8) {
+    if ((num != null) && (num.length() >= 8)) {
       Intent phoneIntent = new Intent("android.intent.action.CALL", Uri.parse("tel:" + num));
       startActivity(phoneIntent);
     }
@@ -623,13 +624,15 @@ public class TwelveKeyDialer extends Activity {
 
   private void startBalanceTask() {
     mBalanceTask = new BalanceTask(this).execute(new BalanceTask.BalanceTaskListener() {
+      @Override
       public void onCancelGetBalance() {
-        if (mBalanceTask != null && mBalanceTask.getStatus() == UserTask.Status.RUNNING) {
+        if ((mBalanceTask != null) && (mBalanceTask.getStatus() == UserTask.Status.RUNNING)) {
           mBalanceTask.cancel(true);
           mBalanceTask = null;
         }
       }
 
+      @Override
       public void afterInputMyNum() {
         balance();
       }
@@ -644,7 +647,7 @@ public class TwelveKeyDialer extends Activity {
     mUpdateTask = new UpdateTask(this).execute(new UpdateTask.UpdateTaskListener() {
       @Override
       public void onCancelGetUpdate() {
-        if (mUpdateTask != null && mUpdateTask.getStatus() == UserTask.Status.RUNNING) {
+        if ((mUpdateTask != null) && (mUpdateTask.getStatus() == UserTask.Status.RUNNING)) {
           mUpdateTask.cancel(true);
           mUpdateTask = null;
         }
@@ -674,7 +677,7 @@ public class TwelveKeyDialer extends Activity {
 
   @Override
   public boolean onKeyDown(int keyCode, KeyEvent event) {
-    if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {
+    if ((keyCode == KeyEvent.KEYCODE_BACK) && (event.getRepeatCount() == 0)) {
       new AlertDialog.Builder(TwelveKeyDialer.this).setTitle(R.string.exit)
           .setIcon(android.R.drawable.ic_menu_info_details).setMessage(R.string.really_exit)
           .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {

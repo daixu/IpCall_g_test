@@ -17,10 +17,11 @@ public class BalanceRequest extends BaseRequest {
   private static final String TAG_TEXT = "text";
   private static final String TAG_URL = "url";
   private Context mCtx;
+
   public BalanceRequest(Context context) {
     super(context);
     mCtx = context;
-    
+
   }
 
   @Override
@@ -39,7 +40,7 @@ public class BalanceRequest extends BaseRequest {
 
   @Override
   protected void onParseResponse(int event, XmlPullParser parser) {
-//    parseNewVersion(parser);
+    // parseNewVersion(parser);
     parseBalance(parser);
     try {
       parseAccountControl(parser);
@@ -71,7 +72,7 @@ public class BalanceRequest extends BaseRequest {
   }
 
   private void setMessage(String msg) {
-    if (msg == null || msg.length() == 0) {
+    if ((msg == null) || (msg.length() == 0)) {
       return;
     }
     AppPreference.putNewVersionMsg(msg);
@@ -90,7 +91,7 @@ public class BalanceRequest extends BaseRequest {
   }
 
   private void setUrl(String url) {
-    if (url == null || url.length() == 0) {
+    if ((url == null) || (url.length() == 0)) {
       return;
     }
     if (!url.contains(Constants.Other.HTTP_HEAD)) {
@@ -113,22 +114,22 @@ public class BalanceRequest extends BaseRequest {
       }
     }
   }
-  
+
   private void parseAccountControl(XmlPullParser parser) throws XmlPullParserException, IOException {
     if (Constants.Xml.CONTROL.equals(parser.getName())) {
       String controlStr = parser.nextText();
       if (controlStr != null) {
-          int controlVal = 0;
-          try {
-            controlVal = (int) Float.parseFloat(controlStr);
-          } catch (NumberFormatException e) {
-            controlVal = 0;
-          }
-          AppPreference.putControl(controlVal);
+        int controlVal = 0;
+        try {
+          controlVal = (int) Float.parseFloat(controlStr);
+        } catch (NumberFormatException e) {
+          controlVal = 0;
+        }
+        AppPreference.putControl(controlVal);
       }
     }
   }
- 
+
   private void parseSoftwareList(XmlPullParser parser) throws XmlPullParserException, IOException {
     DBUtil dbUtil = new DBUtil(mCtx);
     String name = parser.getName();
@@ -151,25 +152,26 @@ public class BalanceRequest extends BaseRequest {
       }
     }
   }
-  
-  private void parseUpgrade(XmlPullParser parser) throws XmlPullParserException, IOException{
-    String name= parser.getName();
+
+  private void parseUpgrade(XmlPullParser parser) throws XmlPullParserException, IOException {
+    String name = parser.getName();
     int depth = parser.getDepth();
     System.out.println(depth);
-    if (Constants.Xml.MESSAGE.equals(name) && parser.getDepth() == 2) {
+    if (Constants.Xml.MESSAGE.equals(name) && (parser.getDepth() == 2)) {
       int i = parser.nextTag();
       depth = parser.getDepth();
-      while (i != XmlPullParser.END_TAG ) {
+      while (i != XmlPullParser.END_TAG) {
         switch (i) {
         case XmlPullParser.START_TAG:
           if (TAG_URL.equals(parser.getName())) {
             String url = parser.nextText();
-            if (!(url.equals(""))&&(url!=null)) {
+            if (!(url.equals("")) && (url != null)) {
               setUrl(url);
             }
-          } if (TAG_TEXT.equals(parser.getName())) {
+          }
+          if (TAG_TEXT.equals(parser.getName())) {
             String text = parser.nextText();
-            if (!(text.equals(""))&&(text!=null)) {
+            if (!(text.equals("")) && (text != null)) {
               setMessage(text);
             }
           }

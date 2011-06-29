@@ -15,7 +15,7 @@ public class ModifyRequest extends BaseRequest {
   private String mOldPassword = null;
   private String mNewPassword = null;
 
-  public ModifyRequest(Context context,String oldPassword, String newPassword) {
+  public ModifyRequest(Context context, String oldPassword, String newPassword) {
     super(context);
     mOldPassword = oldPassword;
     mNewPassword = newPassword;
@@ -46,12 +46,15 @@ public class ModifyRequest extends BaseRequest {
       String userIdStr = parser.getAttributeValue(null, Constants.Xml.UID);
       String callerStr = parser.getAttributeValue(null, Constants.Xml.CALLER);
       String passwordStr = parser.getAttributeValue(null, Constants.Xml.PASSWORD);
-      if (userIdStr != null && userIdStr.length() > 0)
+      if ((userIdStr != null) && (userIdStr.length() > 0)) {
         AppPreference.putUserId(userIdStr);
-      if (callerStr != null && callerStr.length() > 0)
+      }
+      if ((callerStr != null) && (callerStr.length() > 0)) {
         AppPreference.putMyNum(callerStr);
-      if(passwordStr != null && passwordStr.length() > 0) 
+      }
+      if ((passwordStr != null) && (passwordStr.length() > 0)) {
         AppPreference.putPassword(passwordStr);
+      }
     }
   }
 }

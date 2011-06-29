@@ -26,7 +26,7 @@ public class ModifyTask extends UserTask<Void, Void, String> implements BaseRequ
     return this;
   }
 
-  private void setModifyInfo(String oldPassword,String newPassword) {
+  private void setModifyInfo(String oldPassword, String newPassword) {
     mOldPassword = oldPassword;
     mNewPassword = newPassword;
   }
@@ -60,7 +60,7 @@ public class ModifyTask extends UserTask<Void, Void, String> implements BaseRequ
 
   @Override
   public String doInBackground(Void... values) {
-    mModifyRequest = new ModifyRequest(mCtx,mOldPassword, mNewPassword);
+    mModifyRequest = new ModifyRequest(mCtx, mOldPassword, mNewPassword);
     mModifyRequest.post(this);
     return null;
   }
@@ -85,8 +85,7 @@ public class ModifyTask extends UserTask<Void, Void, String> implements BaseRequ
       String reason = mModifyRequest.getReason();
       reason = mCtx.getString(R.string.old_password_incorrect);
       handleExceptionResult(reason);
-    } 
-    else {
+    } else {
       String reason = mModifyRequest.getReason();
       if (BaseRequest.NETWORK_EXCEPTION == resultCode) {
         reason = mCtx.getString(R.string.network_exception);

@@ -50,6 +50,7 @@ public class BalanceTask extends UserTask<Void, Void, String> implements BaseReq
     mProgressDlg.setMessage(mActivity.getString(R.string.fetching_balance));
     mProgressDlg.setCancelable(true);
     mProgressDlg.setOnCancelListener(new DialogInterface.OnCancelListener() {
+      @Override
       public void onCancel(DialogInterface dialog) {
         if (mListener != null) {
           mListener.onCancelGetBalance();
@@ -64,12 +65,14 @@ public class BalanceTask extends UserTask<Void, Void, String> implements BaseReq
     mProgressDlg.dismiss();
   }
 
+  @Override
   public String doInBackground(Void... values) {
     mGetBalanceRequest = new BalanceRequest(mActivity);
     mGetBalanceRequest.post(this);
     return null;
   }
 
+  @Override
   public void onRequestProcessInfo(String info) {
   }
 
@@ -80,13 +83,14 @@ public class BalanceTask extends UserTask<Void, Void, String> implements BaseReq
   @Override
   public void onPostExecute(String result) {
     mProgressDlg.dismiss();
-    if (!isCancelled())
+    if (!isCancelled()) {
       handleResult(result);
+    }
   }
 
   private void handleResult(String result) {
     int resultCode = mGetBalanceRequest.getResuleCode();
-//    int resultCode = 55;
+    // int resultCode = 55;
     if (BaseRequest.NORMAL_STATUS == resultCode) {
       handleNormalResult();
     } else if (BaseRequest.UPDATE_UPGRADE == resultCode) {
@@ -100,10 +104,8 @@ public class BalanceTask extends UserTask<Void, Void, String> implements BaseReq
   private void handleUpdateResult() {
     AppPreference.markForceUpdate(true);
     String text = AppPreference.getUpdateText();
-    new AlertDialog.Builder(mActivity)
-        .setIcon(android.R.drawable.ic_menu_info_details)
-        .setTitle(R.string.update_versions)
-        .setMessage(text)
+    new AlertDialog.Builder(mActivity).setIcon(android.R.drawable.ic_menu_info_details)
+        .setTitle(R.string.update_versions).setMessage(text)
         .setPositiveButton(mActivity.getString(R.string.upgrade), new DialogInterface.OnClickListener() {
           @Override
           public void onClick(DialogInterface dialog, int which) {
@@ -113,15 +115,13 @@ public class BalanceTask extends UserTask<Void, Void, String> implements BaseReq
               download(url);
             }
           }
-        })
-        .create()
-        .show();
+        }).create().show();
   }
-  
+
   private void download(String url) {
     if (!FileUtils.isSDCardReady()) {
-      new AlertDialog.Builder(mActivity).setMessage(R.string.sdcard_not_ready)
-          .setPositiveButton(R.string.ok, null).show();
+      new AlertDialog.Builder(mActivity).setMessage(R.string.sdcard_not_ready).setPositiveButton(R.string.ok, null)
+          .show();
       return;
     }
 
@@ -141,14 +141,14 @@ public class BalanceTask extends UserTask<Void, Void, String> implements BaseReq
 
   private void handleExceptionResult(String reason) {
     new AlertDialog.Builder(mActivity).setTitle(R.string.wrong).setMessage(reason)
-    .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-      @Override
-      public void onClick(DialogInterface dialog, int which) {
-        Intent intent=new Intent(mActivity, AccountActiveActivity.class);
-        mActivity.startActivity(intent);
-        mActivity.finish();
-      }
-    }).show();
+        .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+          @Override
+          public void onClick(DialogInterface dialog, int which) {
+            Intent intent = new Intent(mActivity, AccountActiveActivity.class);
+            mActivity.startActivity(intent);
+            mActivity.finish();
+          }
+        }).show();
   }
 
   public static interface BalanceTaskListener {

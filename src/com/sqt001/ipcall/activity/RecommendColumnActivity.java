@@ -31,8 +31,8 @@ public class RecommendColumnActivity extends Activity {
     mListView = new ListView(this);
 
     if ((getData().size() > 0) && (!getData().equals(""))) {
-      SimpleAdapter adapter = new SimpleAdapter(this, getData(), R.layout.recommendcolumn_item, 
-          new String[] { "title", "message" }, new int[] { R.id.tv1, R.id.tv2 });
+      SimpleAdapter adapter = new SimpleAdapter(this, getData(), R.layout.recommendcolumn_item, new String[] { "title",
+          "message" }, new int[] { R.id.tv1, R.id.tv2 });
       adapter.notifyDataSetChanged();
       mListView.setAdapter(adapter);
       setContentView(mListView);
@@ -54,9 +54,7 @@ public class RecommendColumnActivity extends Activity {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                 }
-              })
-              .create()
-              .show();
+              }).create().show();
         }
       });
     }
@@ -78,11 +76,9 @@ public class RecommendColumnActivity extends Activity {
 
   @Override
   public boolean onKeyDown(int keyCode, KeyEvent event) {
-    if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {
-      new AlertDialog.Builder(RecommendColumnActivity.this)
-          .setTitle(R.string.exit)
-          .setIcon(android.R.drawable.ic_menu_info_details)
-          .setMessage(R.string.really_exit)
+    if ((keyCode == KeyEvent.KEYCODE_BACK) && (event.getRepeatCount() == 0)) {
+      new AlertDialog.Builder(RecommendColumnActivity.this).setTitle(R.string.exit)
+          .setIcon(android.R.drawable.ic_menu_info_details).setMessage(R.string.really_exit)
           .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -93,9 +89,7 @@ public class RecommendColumnActivity extends Activity {
             @Override
             public void onClick(DialogInterface dialog, int which) {
             }
-          })
-          .create()
-          .show();
+          }).create().show();
       return true;
     }
     return super.onKeyDown(keyCode, event);

@@ -29,7 +29,7 @@ public class CheckAccount {
       return false;
       // return AppPreference.getAccount().length() > 0 || AppPreference.getUserId().length() > 0;
     } else {
-      return AppPreference.getAccount().length() > 0 || AppPreference.getUserId().length() > 0;
+      return (AppPreference.getAccount().length() > 0) || (AppPreference.getUserId().length() > 0);
     }
   }
 }

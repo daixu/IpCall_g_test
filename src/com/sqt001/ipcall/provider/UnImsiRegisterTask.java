@@ -22,7 +22,7 @@ public class UnImsiRegisterTask extends UserTask<Void, Void, String> implements 
   private ProgressDialog mProgressDlg;
   private Activity mActivity;
 
-  public UnImsiRegisterTask(Activity activity){
+  public UnImsiRegisterTask(Activity activity) {
     super();
     mActivity = activity;
   }
@@ -49,6 +49,7 @@ public class UnImsiRegisterTask extends UserTask<Void, Void, String> implements 
     mProgressDlg.setMessage(mActivity.getString(R.string.login_connect));
     mProgressDlg.setCancelable(true);
     mProgressDlg.setOnCancelListener(new DialogInterface.OnCancelListener() {
+      @Override
       public void onCancel(DialogInterface dialog) {
         if (mListener != null) {
           mListener.onCancelGetBalance();
@@ -63,12 +64,14 @@ public class UnImsiRegisterTask extends UserTask<Void, Void, String> implements 
     mProgressDlg.dismiss();
   }
 
+  @Override
   public String doInBackground(Void... values) {
     mGetBalanceRequest = new BalanceRequest(mActivity);
     mGetBalanceRequest.post(this);
     return null;
   }
 
+  @Override
   public void onRequestProcessInfo(String info) {
   }
 
@@ -79,12 +82,13 @@ public class UnImsiRegisterTask extends UserTask<Void, Void, String> implements 
   @Override
   public void onPostExecute(String result) {
     mProgressDlg.dismiss();
-    if (!isCancelled())
+    if (!isCancelled()) {
       handleResult(result);
+    }
   }
 
   private void handleResult(String result) {
-     int resultCode = mGetBalanceRequest.getResuleCode();
+    int resultCode = mGetBalanceRequest.getResuleCode();
     if (BaseRequest.NORMAL_STATUS == resultCode) {
       handleNormalResult();
     } else {
@@ -105,14 +109,14 @@ public class UnImsiRegisterTask extends UserTask<Void, Void, String> implements 
 
   private void handleExceptionResult(String reason) {
     new AlertDialog.Builder(mActivity).setTitle(R.string.wrong).setMessage(reason)
-    .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-      @Override
-      public void onClick(DialogInterface dialog, int which) {
-        Intent intent=new Intent(mActivity, AccountActiveActivity.class);
-        mActivity.startActivity(intent);
-        mActivity.finish();
-      }
-    }).show();
+        .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+          @Override
+          public void onClick(DialogInterface dialog, int which) {
+            Intent intent = new Intent(mActivity, AccountActiveActivity.class);
+            mActivity.startActivity(intent);
+            mActivity.finish();
+          }
+        }).show();
   }
 
   public static interface BalanceTaskListener {
