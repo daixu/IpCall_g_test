@@ -158,7 +158,7 @@ public class ContactsListActivity extends ListActivity {
 					if(ch ==' '){
 						return;
 					}
-					String value = String.valueOf(ch);
+					String value = String.valueOf(ch).toLowerCase();
 					char firstLetter = value.charAt(0);
 					if (!mShowing && firstLetter != mPrevLetter) {
 						mShowing = true;
@@ -440,7 +440,7 @@ public class ContactsListActivity extends ListActivity {
 		int i = 0;
 		while (cursor.moveToNext()) {
 			String[] nameAry = NameQueryer.create(cursor).query();
-			String firstName = nameAry[0];
+			String firstName = nameAry[0].toLowerCase();
 			char firstChar = StrUitl.firstChar(firstName);
 			if (isFirst || curChar != firstChar) {
 				map = new HashMap<String, Object>();
