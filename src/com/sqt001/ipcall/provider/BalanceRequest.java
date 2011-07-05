@@ -134,7 +134,7 @@ public class BalanceRequest extends BaseRequest {
     DBUtil dbUtil = new DBUtil(mCtx);
     String name = parser.getName();
     if (Constants.Xml.SOFTWARELIST.equals(name)) {
-      dbUtil.delAll();
+      //dbUtil.delAll();
       int i = parser.nextTag();
       while (i != XmlPullParser.END_TAG) {
         switch (i) {
@@ -143,8 +143,11 @@ public class BalanceRequest extends BaseRequest {
           String title = parser.getAttributeValue(null, Constants.Xml.TITLE);
           String message = parser.getAttributeValue(null, Constants.Xml.MESSAGE);
           String url = parser.getAttributeValue(null, Constants.Xml.URL);
-          SoftObj obj = new SoftObj(id, title, message, url);
-          dbUtil.insertSubject(obj);
+          boolean isExists = dbUtil.readFromId(id);
+          if (!isExists) {
+            SoftObj obj = new SoftObj(id, title, message, url);
+            dbUtil.insertSubject(obj);
+          }
           System.out.println(id + title + message + url);
           parser.next();
         }

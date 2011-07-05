@@ -53,6 +53,36 @@ public class DBUtil {
     return buffer;
   }
 
+  public boolean readFromId(String id) {
+    boolean isExists = false;
+
+    SQLiteDatabase db = null;
+    Cursor cur = null;
+    try {
+      db = mDbHelper.getWritableDatabase();
+
+      cur = db.query(true, IpCallHelper.SOFT_TABLE, null, "soft_id=" + id, null, null, null, null, null);
+      
+      if (cur == null) {
+        return isExists;
+      }
+      if (cur.getCount() > 0) {
+        isExists = true;
+      }
+    } catch (Exception ex) {
+      ex.printStackTrace();
+      // exception...
+    } finally {
+      if (cur != null) {
+        cur.close();
+      }
+      if (db != null) {
+        db.close();
+      }
+    }
+    return isExists;
+  }
+
   /** 删除所有数据*/
   public boolean delAll() {
     boolean flag = false;
