@@ -24,15 +24,16 @@ import com.sqt001.ipcall.util.SoftObj;
 
 public class RecommendColumnActivity extends Activity {
   private ListView mListView;
+  private SimpleAdapter adapter;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     mListView = new ListView(this);
 
-    if ((getData().size() > 0) && (!getData().equals(""))) {
-      SimpleAdapter adapter = new SimpleAdapter(this, getData(), R.layout.recommendcolumn_item, new String[] { "title",
-          "message" }, new int[] { R.id.tv1, R.id.tv2 });
+    if (getData().size() > 0) {
+      adapter = new SimpleAdapter(this, getData(), R.layout.recommendcolumn_item, new String[] { "title", "message" },
+          new int[] { R.id.tv1, R.id.tv2 });
       adapter.notifyDataSetChanged();
       mListView.setAdapter(adapter);
       setContentView(mListView);
@@ -57,6 +58,18 @@ public class RecommendColumnActivity extends Activity {
               }).create().show();
         }
       });
+    }
+  }
+
+  @Override
+  protected void onResume() {
+    super.onResume();
+    if (getData().size() > 0) {
+      adapter = new SimpleAdapter(this, getData(), R.layout.recommendcolumn_item, new String[] { "title", "message" },
+          new int[] { R.id.tv1, R.id.tv2 });
+      adapter.notifyDataSetChanged();
+      mListView.setAdapter(adapter);
+      setContentView(mListView);
     }
   }
 

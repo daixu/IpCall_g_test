@@ -64,7 +64,7 @@ public class DialtactsActivity extends TabActivity implements TabHost.OnTabChang
    */
   private void setupRecommendFriendsTab() {
     Intent intent = new Intent();// UI.LIST_STREQUENT_ACTION);
-    intent.setClass(this, RecommendColumnActivity.class);
+    intent.setClass(this, RecommendColumnActivityxx.class);
 
     mTabHost.addTab(mTabHost.newTabSpec("recommend_column")
         .setIndicator(getString(R.string.recommend_column), getResources().getDrawable(R.drawable.ic_tab_recommend))

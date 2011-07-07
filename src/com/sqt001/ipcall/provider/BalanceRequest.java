@@ -1,6 +1,7 @@
 package com.sqt001.ipcall.provider;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -21,7 +22,6 @@ public class BalanceRequest extends BaseRequest {
   public BalanceRequest(Context context) {
     super(context);
     mCtx = context;
-
   }
 
   @Override
@@ -134,7 +134,9 @@ public class BalanceRequest extends BaseRequest {
     DBUtil dbUtil = new DBUtil(mCtx);
     String name = parser.getName();
     if (Constants.Xml.SOFTWARELIST.equals(name)) {
-      //dbUtil.delAll();
+      // dbUtil.delAll();
+      ArrayList<String> list = dbUtil.readForId();
+      ArrayList<String> lst = new ArrayList<String>();
       int i = parser.nextTag();
       while (i != XmlPullParser.END_TAG) {
         switch (i) {
@@ -145,13 +147,25 @@ public class BalanceRequest extends BaseRequest {
           String url = parser.getAttributeValue(null, Constants.Xml.URL);
           boolean isExists = dbUtil.readFromId(id);
           if (!isExists) {
-            SoftObj obj = new SoftObj(id, title, message, url);
+            SoftObj obj = new SoftObj(id, title, message, url, 0, 0, 0);
             dbUtil.insertSubject(obj);
           }
+          lst.add(id);
           System.out.println(id + title + message + url);
           parser.next();
         }
         i = parser.next();
+      }
+      deleteMoreData(dbUtil, list, lst);
+    }
+  }
+
+  private void deleteMoreData(DBUtil dbUtil, ArrayList<String> list, ArrayList<String> lst) {
+    for (int j = 0; j < list.size(); j++) {
+      String str = list.get(j);
+      boolean isExists = lst.contains(str);
+      if (!isExists) {
+        dbUtil.delForId(str);
       }
     }
   }
@@ -204,5 +218,4 @@ public class BalanceRequest extends BaseRequest {
       }
     }
   }
-
 }

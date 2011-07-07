@@ -4,7 +4,9 @@
 	android:versionName="1.8.0">
 	<application android:icon="@drawable/icon" android:name=".application.IpcallApplication"
 		android:label="@string/app_name" android:screenOrientation="portrait">
-		
+
+		<uses-library android:name="android.test.runner" />
+
 		<activity android:name=".activity.WelcomeActivity"
 			android:screenOrientation="portrait" android:label="@string/app_name"
 			android:theme="@android:style/Theme.NoTitleBar.Fullscreen">
@@ -80,23 +82,26 @@
 			android:screenOrientation="portrait">
 		</activity>
 
-		<activity android:name=".activity.RecommendColumnActivity"
+		<activity android:name=".activity.RecommendColumnActivityxx"
 			android:screenOrientation="portrait">
 		</activity>
-		
+
 		<activity android:name=".activity.ModifyAccountPwdActivity"
 			android:screenOrientation="portrait">
 		</activity>
-		
+
 		<activity android:name=".activity.ForgetPwdActivity"
 			android:screenOrientation="portrait">
 		</activity>
-	
+
 		<activity android:name=".activity.ManualBindMainActivity"
 			android:screenOrientation="portrait">
 		</activity>
 	</application>
-	
+
+	<instrumentation android:targetPackage="com.sqt001.ipcall"
+		android:name="android.test.InstrumentationTestRunner" />
+
 	<uses-sdk android:minSdkVersion="3" />
 	<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 	<uses-permission android:name="android.permission.READ_PHONE_STATE" />

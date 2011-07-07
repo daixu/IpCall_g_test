@@ -13,6 +13,9 @@ public class IpCallHelper extends SQLiteOpenHelper {
   public final static String SOFT_TITLE = "soft_title";
   public final static String SOFT_MESSAGE = "soft_message";
   public final static String SOFT_URL = "soft_url";
+  public final static String DOWNLOAD_SIZE = "downloadSize";
+  public final static String FILE_SIZE = "fileSize";
+  public final static String IS_DOWNLOAD = "isDownload";
 
   public IpCallHelper(Context context) {
     super(context, DBNAME, null, DB_VERSION);
@@ -20,8 +23,15 @@ public class IpCallHelper extends SQLiteOpenHelper {
 
   @Override
   public void onCreate(SQLiteDatabase db) {
-    String bdSoft = "CREATE TABLE IF NOT EXISTS " + SOFT_TABLE + " (" + SOFT_ID + " TEXT, " + SOFT_TITLE + " TEXT, "
-        + SOFT_MESSAGE + " TEXT, " + SOFT_URL + " TEXT);";
+    String bdSoft = "CREATE TABLE IF NOT EXISTS " 
+        + SOFT_TABLE + " (" 
+        + SOFT_ID + " TEXT, " 
+        + SOFT_TITLE + " TEXT, "
+        + SOFT_MESSAGE + " TEXT, " 
+        + SOFT_URL + " TEXT, " 
+        + DOWNLOAD_SIZE +" Integer, "
+        + IS_DOWNLOAD + " Integer, "
+        + FILE_SIZE +" Integer);";
 
     db.execSQL(bdSoft);
   }

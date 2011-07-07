@@ -151,4 +151,6 @@
 	<string name="upgrade">升级</string>
 	<string name="cardcase">名片夹</string>
 	<string name="today">今天</string>
+	<string name="download">下载</string>
+	<string name="pause">暂停</string>
 </resources>
