@@ -95,7 +95,10 @@ public class BalanceTask extends UserTask<Void, Void, String> implements BaseReq
       handleNormalResult();
     } else if (BaseRequest.UPDATE_UPGRADE == resultCode) {
       handleUpdateResult();
-    } else {
+    } else if (BaseRequest.NETWORK_EXCEPTION == resultCode){
+      String reason = mGetBalanceRequest.getReason();
+      handleNetWorkResult(reason);
+    }else {
       String reason = mGetBalanceRequest.getReason();
       handleExceptionResult(reason);
     }
@@ -114,6 +117,16 @@ public class BalanceTask extends UserTask<Void, Void, String> implements BaseReq
             if ((url != null) && (url != null)) {
               download(url);
             }
+          }
+        }).create().show();
+  }
+  
+  private void handleNetWorkResult(String reason) {
+    new AlertDialog.Builder(mActivity).setIcon(android.R.drawable.ic_menu_info_details)
+        .setTitle(R.string.exception).setMessage(reason)
+        .setPositiveButton(mActivity.getString(R.string.ok), new DialogInterface.OnClickListener() {
+          @Override
+          public void onClick(DialogInterface dialog, int which) {
           }
         }).create().show();
   }

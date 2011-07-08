@@ -1,5 +1,6 @@
 package com.sqt001.ipcall.activity;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -15,6 +16,8 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -28,7 +31,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
-import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -45,13 +48,14 @@ public class RecommendColumnActivityxx extends Activity {
   private int tempPosition;
   private DBUtil dbHelper;
   private List<Map<String, Object>> dataList;
-  MyAdapter adapter;
+  private String mDirName = "newding/";
+  private MyAdapter adapter;
   private Handler mHandler = new Handler() {
 
     @Override
     public void handleMessage(Message msg) {
       super.handleMessage(msg);
-      Map map = dataList.get(msg.what);
+      Map<String, Object> map = dataList.get(msg.what);
       ProgressBar progressBar = (ProgressBar) map.get("progressBar");
       switch (msg.arg1) {
       case 1:
@@ -82,7 +86,6 @@ public class RecommendColumnActivityxx extends Activity {
     super.onCreate(savedInstanceState);
     dbHelper = new DBUtil(this);
     mListView = new ListView(this);
-
     if ((getData().size() > 0) && (!getData().equals(""))) {
       adapter = new MyAdapter(getData());
       adapter.notifyDataSetChanged();
@@ -117,8 +120,10 @@ public class RecommendColumnActivityxx extends Activity {
     Log.d("hcl", "onResume");
     super.onResume();
     if (adapter != null) {
-      adapter.notifyDataSetChanged();
+      Log.d("hcl", "onResume adapter != null");
+      // adapter.notifyDataSetInvalidated();
     } else {
+      Log.d("hcl", "onResume adapter == null");
       dataList = getData();
       if ((dataList.size() > 0) && (!dataList.equals(""))) {
         mListView = new ListView(this);
@@ -131,7 +136,6 @@ public class RecommendColumnActivityxx extends Activity {
   }
 
   class MyAdapter extends BaseAdapter {
-
     public MyAdapter(List<Map<String, Object>> dateList) {
       super();
       dataList = dateList;
@@ -154,7 +158,7 @@ public class RecommendColumnActivityxx extends Activity {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-      final Map map = dataList.get(position);
+      final Map<String, Object> map = dataList.get(position);
       tempPosition = position;
       final ArrayList<SoftObj> lst = new DBUtil(RecommendColumnActivityxx.this).readAll();
       if (map != null) {
@@ -164,29 +168,45 @@ public class RecommendColumnActivityxx extends Activity {
             R.layout.recommendcolumn_item, null);
         TextView tvTitle = (TextView) convertView.findViewById(R.id.textView_title);
         TextView tvMessage = (TextView) convertView.findViewById(R.id.textView_message);
-        final Button btDownload = (Button) convertView.findViewById(R.id.button_download_start_or_pause);
-        final Button btCancel = (Button) convertView.findViewById(R.id.button_download_cancel);
+        final ImageView ivDownload = (ImageView) convertView.findViewById(R.id.button_download_start_or_pause);
+        final ImageView ivCancel = (ImageView) convertView.findViewById(R.id.button_download_cancel);
+        final ImageView ivInstall = (ImageView) convertView.findViewById(R.id.button_download_install);
         final ProgressBar progressBar = (ProgressBar) convertView.findViewById(R.id.progressBar_downLoad);
         int state = 0;
         if (map.get("state") != null)
           state = (Integer) map.get("state");
         if (state == 0) {
-          btDownload.setText(getString(R.string.download));
-          btCancel.setVisibility(View.GONE);
+          BitmapDrawable bmpDraw = (BitmapDrawable) getResources().getDrawable(R.drawable.download_start);
+          Bitmap bitmap = bmpDraw.getBitmap();
+          ivDownload.setImageBitmap(bitmap);
+          ivCancel.setVisibility(View.GONE);
           progressBar.setVisibility(View.GONE);
-        }
-        if (state != 1) {
-          if (map.get(IpCallHelper.IS_DOWNLOAD) != null && (Integer) map.get(IpCallHelper.IS_DOWNLOAD) == 1) {
-            btDownload.setText(getString(R.string.download));
-            btCancel.setVisibility(View.VISIBLE);
-            progressBar.setVisibility(View.VISIBLE);
-            if (map.get(IpCallHelper.DOWNLOAD_SIZE) != null)
-              progressBar.setProgress((Integer) map.get(IpCallHelper.DOWNLOAD_SIZE));
-            map.put("state", 2);
-          }
+        } else if (state == 1) {
+          BitmapDrawable bmpDraw = (BitmapDrawable) getResources().getDrawable(R.drawable.download_pause);
+          Bitmap bitmap = bmpDraw.getBitmap();
+          ivDownload.setImageBitmap(bitmap);
+          ivDownload.setVisibility(View.VISIBLE);
+          ivCancel.setVisibility(View.VISIBLE);
+          progressBar.setVisibility(View.VISIBLE);
+          ivInstall.setVisibility(View.GONE);
+        } else if (state == 2) {
+          BitmapDrawable bmpDraw = (BitmapDrawable) getResources().getDrawable(R.drawable.download_start);
+          Bitmap bitmap = bmpDraw.getBitmap();
+          ivDownload.setImageBitmap(bitmap);
+          ivDownload.setVisibility(View.VISIBLE);
+          ivCancel.setVisibility(View.VISIBLE);
+          ivInstall.setVisibility(View.GONE);
+          progressBar.setVisibility(View.VISIBLE);
+          progressBar.setProgress((Integer) map.get(IpCallHelper.DOWNLOAD_SIZE));
+        } else if (state == 3) {
+          ivCancel.setVisibility(View.GONE);
+          ivDownload.setVisibility(View.GONE);
+          ivInstall.setVisibility(View.VISIBLE);
+          progressBar.setProgress(100);
+          progressBar.setVisibility(View.VISIBLE);
         }
 
-        btDownload.setOnClickListener(new OnClickListener() {
+        ivDownload.setOnClickListener(new OnClickListener() {
           int position = tempPosition;
 
           @Override
@@ -197,26 +217,28 @@ public class RecommendColumnActivityxx extends Activity {
             }
             if (state != 1) {
               downloadFile(lst, position);
-              btDownload.setText(getString(R.string.pause));
-              btCancel.setVisibility(View.VISIBLE);
+              BitmapDrawable bmpDraw = (BitmapDrawable) getResources().getDrawable(R.drawable.download_pause);
+              Bitmap bitmap = bmpDraw.getBitmap();
+              ivDownload.setImageBitmap(bitmap);
+              ivCancel.setVisibility(View.VISIBLE);
               progressBar.setVisibility(View.VISIBLE);
               state = 1;
             } else if (state == 1) {
               try {
                 pauseDownloadFile(position);
-                btDownload.setText(getString(R.string.download));
+                BitmapDrawable bmpDraw = (BitmapDrawable) getResources().getDrawable(R.drawable.download_start);
+                Bitmap bitmap = bmpDraw.getBitmap();
+                ivDownload.setImageBitmap(bitmap);
                 state = 2;
               } catch (Exception e) {
                 e.printStackTrace();
                 Toast.makeText(RecommendColumnActivityxx.this, "下载出错", Toast.LENGTH_LONG).show();
               }
-
             }
             map.put("state", state);
           }
-
         });
-        btCancel.setOnClickListener(new OnClickListener() {
+        ivCancel.setOnClickListener(new OnClickListener() {
           int position = tempPosition;
 
           @Override
@@ -227,14 +249,26 @@ public class RecommendColumnActivityxx extends Activity {
             }
             if (state != 0) {
               cancelDownloadFile(position);
-              btDownload.setText(getString(R.string.download));
-              btCancel.setVisibility(View.GONE);
+              BitmapDrawable bmpDraw = (BitmapDrawable) getResources().getDrawable(R.drawable.download_start);
+              Bitmap bitmap = bmpDraw.getBitmap();
+              ivDownload.setImageBitmap(bitmap);
+              ivCancel.setVisibility(View.GONE);
               progressBar.setVisibility(View.GONE);
               state = 0;
             }
             map.put("state", state);
           }
         });
+
+        ivInstall.setOnClickListener(new OnClickListener() {
+          int position = tempPosition;
+
+          @Override
+          public void onClick(View v) {
+            install(lst, position);
+          }
+        });
+
         tvTitle.setText(title);
         tvMessage.setText(message);
         int progress = 0;
@@ -249,7 +283,7 @@ public class RecommendColumnActivityxx extends Activity {
     }
 
     private void cancelDownloadFile(int position) {
-      Map map = dataList.get(position);
+      Map<String, Object> map = dataList.get(position);
       DownloadThread thread = (DownloadThread) map.get("thread");
       int state = (Integer) map.get("state");
       Log.d("hcl", " cancelDownloadFile 1 ");
@@ -263,7 +297,6 @@ public class RecommendColumnActivityxx extends Activity {
             thread.o.notify();
           }
         }
-
       } else {
         String url = (String) map.get(IpCallHelper.SOFT_URL);
         removeSDcardFileAndUpdateSQL(position, url);
@@ -274,11 +307,14 @@ public class RecommendColumnActivityxx extends Activity {
       map.put(IpCallHelper.FILE_SIZE, 0);
       map.put(IpCallHelper.IS_DOWNLOAD, 0);
       map.put("thread", thread);
-
+      String url = (String) map.get(IpCallHelper.SOFT_URL);
+      String newFileName = url.substring(url.lastIndexOf("/") + 1);
+      String filename = getFileNameForUrl(newFileName);
+      deleteTempFile(filename);
     }
 
     private void pauseDownloadFile(int position) throws Exception {
-      Map map = dataList.get(position);
+      Map<String, Object> map = dataList.get(position);
       DownloadThread thread = (DownloadThread) map.get("thread");
       if (thread != null) {
         thread.isPause = true;
@@ -286,7 +322,7 @@ public class RecommendColumnActivityxx extends Activity {
     }
 
     private void downloadFile(final ArrayList<SoftObj> lst, int position) {
-      Map map = dataList.get(position);
+      Map<String, Object> map = dataList.get(position);
       Uri uri = Uri.parse(lst.get(position).getUrl());
       String strUri = uri.toString();
 
@@ -306,9 +342,7 @@ public class RecommendColumnActivityxx extends Activity {
           }
 
         }
-
         map.put("thread", thread);
-
       } else {
         Intent intent = new Intent(Intent.ACTION_VIEW, uri);
         startActivity(intent);
@@ -318,7 +352,7 @@ public class RecommendColumnActivityxx extends Activity {
   }
 
   private void removeSDcardFileAndUpdateSQL(int position, String url) {
-    Map map = dataList.get(position);
+    Map<String, Object> map = dataList.get(position);
     dbHelper.updateForIsDownload(url, 0, 0, 0);
     map.put(IpCallHelper.DOWNLOAD_SIZE, 0);
     map.put(IpCallHelper.FILE_SIZE, 0);
@@ -327,12 +361,10 @@ public class RecommendColumnActivityxx extends Activity {
   }
 
   class DownloadThread extends Thread {
-
     int position;
     int downLoadFileSize;
     int fileSize;
     String url;
-    String mDirName = "newding/";
     Object o = new Object();
     boolean isPause = false;
     boolean isCancel = false;
@@ -346,7 +378,7 @@ public class RecommendColumnActivityxx extends Activity {
     @Override
     public void run() {
       super.run();
-      downHttpFile(url);
+      downHttpFile();
       if (isCancel) {
         removeSDcardFileAndUpdateSQL(position, url);
       }
@@ -358,7 +390,6 @@ public class RecommendColumnActivityxx extends Activity {
       HttpURLConnection conn = null;
       try {
         myFileUrl = new URL(url);
-
         int startPosition = getStartPosition();
         conn = (HttpURLConnection) myFileUrl.openConnection();
         downLoadFileSize = startPosition;
@@ -368,13 +399,11 @@ public class RecommendColumnActivityxx extends Activity {
         conn.setDoInput(true);
         conn.connect();
         is = conn.getInputStream();
-        int i = 3;
-
         if (startPosition == 0) {
           fileSize = conn.getContentLength();// 根据响应获取文件大小
           saveFileInfo();
         } else {
-          Map map = dataList.get(position);
+          Map<String, Object> map = dataList.get(position);
           if (map.get(IpCallHelper.FILE_SIZE) != null)
             fileSize = (Integer) map.get(IpCallHelper.FILE_SIZE);
         }
@@ -384,15 +413,11 @@ public class RecommendColumnActivityxx extends Activity {
         e.printStackTrace();
         sendWrongMessage();
       }
-
       return is;
     }
 
     private void saveFileInfo() {
-      Map map = dataList.get(position);
-      String id = (String) map.get(IpCallHelper.SOFT_ID);
-      String title = (String) map.get(IpCallHelper.SOFT_TITLE);
-      String message = (String) map.get(IpCallHelper.SOFT_MESSAGE);
+      Map<String, Object> map = dataList.get(position);
       String url = (String) map.get(IpCallHelper.SOFT_URL);
       int downloadSize = 0;
       if (map.get(IpCallHelper.DOWNLOAD_SIZE) != null)
@@ -407,7 +432,7 @@ public class RecommendColumnActivityxx extends Activity {
     }
 
     private int getStartPosition() {
-      Map map = dataList.get(position);
+      Map<String, Object> map = dataList.get(position);
       int startPosition = 0;
       if (map.get(IpCallHelper.DOWNLOAD_SIZE) != null)
         startPosition = (Integer) map.get(IpCallHelper.DOWNLOAD_SIZE);
@@ -415,19 +440,12 @@ public class RecommendColumnActivityxx extends Activity {
       return startPosition;
     }
 
-    private FileOutputStream createSDPath(String url) throws FileNotFoundException {
-      SDCarUtil sdUtil = SDCarUtil.getInstance();
-      if (!sdUtil.isFileExist(mDirName)) {
-        sdUtil.createSDDir(mDirName);
-      }
-      String newFilename = url.substring(url.lastIndexOf("/") + 1);
-      newFilename = mDirName + newFilename + ".temp";
-
-      FileOutputStream fos = new FileOutputStream(SDCarUtil.SDPATH + newFilename, true);
+    private FileOutputStream createSDPath(String filename) throws FileNotFoundException {
+      FileOutputStream fos = new FileOutputStream(SDCarUtil.SDPATH + filename, true);
       return fos;
     }
 
-    private void downHttpFile(String url2) {
+    private void downHttpFile() {
       InputStream is = null;
       Message msg = null;
       try {
@@ -437,7 +455,15 @@ public class RecommendColumnActivityxx extends Activity {
           sendWrongMessage();
           return;
         }
-        FileOutputStream fos = createSDPath(url);
+
+        SDCarUtil sdUtil = SDCarUtil.getInstance();
+        if (!sdUtil.isFileExist(mDirName)) {
+          sdUtil.createSDDir(mDirName);
+        }
+        String newFilename = url.substring(url.lastIndexOf("/") + 1);
+        newFilename = mDirName + newFilename + ".temp";
+
+        FileOutputStream fos = createSDPath(newFilename);
         byte buf[] = new byte[1024];
         int progress;
         do {
@@ -468,6 +494,8 @@ public class RecommendColumnActivityxx extends Activity {
         msg = sendCompleteMessage();
         mHandler.sendMessage(msg);
         Log.d("hcl", "complete");
+        String filename = SDCarUtil.SDPATH + newFilename;
+        updateFileName(filename);
       } catch (IOException e) {
         e.printStackTrace();
         sendWrongMessage();
@@ -480,7 +508,6 @@ public class RecommendColumnActivityxx extends Activity {
           sendWrongMessage();
         }
       }
-
     }
 
     private Message sendUpdateMessage(int progress) {
@@ -530,9 +557,51 @@ public class RecommendColumnActivityxx extends Activity {
       item.put(IpCallHelper.FILE_SIZE, so.getFileSize());
       item.put(IpCallHelper.DOWNLOAD_SIZE, so.getDownloadSize());
       item.put(IpCallHelper.IS_DOWNLOAD, so.getIsDownload());
+
+      if (so.getIsDownload() == 1)
+        item.put("state", 2);
+      if (so.getFileSize() != 0 && so.getFileSize() == so.getDownloadSize())
+        item.put("state", 3);
+
       table.add(item);
     }
     return table;
+  }
+
+  private String getFileNameForUrl(String newFileName) {
+    String filename = SDCarUtil.SDPATH + mDirName + newFileName + ".temp";
+    return filename;
+  }
+
+  private void deleteTempFile(String fileName) {
+    File file = new File(fileName);
+    if (file.exists()) {
+      file.delete();
+    }
+  }
+
+  private void updateFileName(String newFileName) {
+    String filename = newFileName.substring(newFileName.indexOf("/") + 1, newFileName.lastIndexOf("."));
+    File newFile = new File(filename);
+    File oldFile = new File(newFileName);
+    if (newFile.exists()) {
+      newFile.delete();
+    }
+    oldFile.renameTo(newFile);
+  }
+
+  private void install(final ArrayList<SoftObj> lst, int position) {
+    Uri uri = Uri.parse(lst.get(position).getUrl());
+    String strUri = uri.toString();
+    String fileName = strUri.substring(strUri.lastIndexOf("/") + 1);
+    fileName = mDirName + fileName;
+    File file = new File(SDCarUtil.SDPATH + fileName);
+    Intent intent = new Intent();
+    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+    intent.setAction(Intent.ACTION_VIEW);
+    String type = "application/vnd.android.package-archive";
+    intent.setDataAndType(Uri.fromFile(file), type);
+    startActivity(intent);
   }
 
   @Override
